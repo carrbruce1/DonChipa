@@ -87,7 +87,7 @@
                          hover:border-dorado transition-colors">
         <i class="fab fa-instagram text-lg"></i>
       </a>
-      <a href="#" class="w-10 h-10 rounded-full bg-verdeClaro border border-dorado/20
+      <a href="https://wa.me/5493454175555" class="w-10 h-10 rounded-full bg-verdeClaro border border-dorado/20
                          flex items-center justify-center text-dorado/60 hover:text-doradoClaro
                          hover:border-dorado transition-colors">
         <i class="fab fa-whatsapp text-lg"></i>
@@ -174,20 +174,66 @@
     </div>
 
     <!-- MODAL FORM -->
-    <div id="modal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
-      <div class="bg-crema text-black rounded-2xl p-6 w-full max-w-sm">
+     <div id="modal"
+  class="hidden fixed inset-0 bg-black/80 z-[300] flex items-center justify-center px-4">
+  <div class="pop-in bg-white text-black rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto">
 
-        <h2 class="font-playfair text-xl mb-4">Datos</h2>
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-5">
+      <h2 class="font-bebas text-xl tracking-wide">Datos del cliente</h2>
+      <button onclick="cerrarFormulario()"
+        class="bg-gray-100 text-gray-500 w-8 h-8 rounded-full flex items-center justify-center text-sm">
+        ✕
+      </button>
+    </div>
 
-        <input id="nombre" placeholder="Nombre" class="w-full mb-2 p-2 rounded border">
-        <input id="apellido" placeholder="Apellido" class="w-full mb-2 p-2 rounded border">
+    <!-- Nombre y Apellido -->
+    <div class="flex gap-2 mb-3">
+      <input id="nombre" placeholder="Nombre"
+        class="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-rojo">
+      <input id="apellido" placeholder="Apellido"
+        class="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-rojo">
+    </div>
 
-        <button onclick="enviarPedido()" class="w-full bg-[#25d366] text-white py-3 rounded-xl">
-          Enviar por WhatsApp
-        </button>
+    <!-- Tipo de pedido -->
+    <select id="tipo" onchange="toggleDelivery()"
+      class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
+      <option value="Delivery">🛵 Delivery</option>
+      <option value="Retiro">🏠 Retiro en local</option>
+    </select>
 
+    <!-- Sección delivery (se oculta si elige Retiro) -->
+    <div id="seccionDelivery">
+      <input id="direccion" placeholder="📍 Dirección"
+        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
+      <select id="zona"
+        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
+      </select>
+    </div>
+
+    <!-- Método de pago -->
+    <div class="border border-gray-200 rounded-xl px-4 py-3 mb-4">
+      <p class="text-xs text-gray-400 font-bold uppercase tracking-wide mb-2">Método de pago</p>
+      <div id="metodosPago" class="flex flex-col gap-2"></div>
+
+      <!-- Alias MP (solo si elige transferencia) -->
+      <div id="aliasInfo" class="hidden mt-3 bg-gray-50 rounded-lg px-3 py-2 text-xs text-gray-600">
+        <span class="font-bold">Alias MP:</span>
+        <span id="aliasTexto"></span>
       </div>
     </div>
+
+    <!-- Botón enviar -->
+    <button onclick="enviarPedido()"
+      class="w-full bg-[#25d366] text-white font-bebas text-xl tracking-wide
+             py-3 rounded-xl flex items-center justify-center gap-2">
+      <i class="fab fa-whatsapp text-xl"></i>
+      Enviar por WhatsApp
+    </button>
+
+  </div>
+</div>
+
 
   </div>
 

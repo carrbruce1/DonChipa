@@ -1,7 +1,7 @@
 const CONFIG = {
 
   nombre:   "Don Chipá",
-  telefono: "NUMERO_ACA", // sin + ni espacios
+  telefono: "5493454175555", // sin + ni espacios
 
   moneda: "$",
 

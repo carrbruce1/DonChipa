@@ -298,8 +298,50 @@ function agregarMayorista(id, label, precio) {
 }
 
 // ── CARRITO ──
+function agregar(nombre, precio) {
+  carrito.push({ nombre, precio });
+  actualizarContador();
+  const btn = document.getElementById("btnCarrito");
+  btn.classList.add("scale-125");
+  setTimeout(() => btn.classList.remove("scale-125"), 200);
+}
+
 function actualizarContador() {
   document.getElementById("contador").innerText = carrito.length;
+}
+
+function abrirCarrito() {
+  if (carrito.length === 0) {
+    alert("Todavía no agregaste nada 🛒");
+    return;
+  }
+
+  const lista = document.getElementById("listaCarrito");
+  lista.innerHTML = "";
+  let total = 0;
+
+  carrito.forEach((p, i) => {
+    total += p.precio;
+    lista.innerHTML += `
+      <div class="flex justify-between items-center py-3">
+        <span class="font-bold text-sm">${p.nombre}</span>
+        <div class="flex items-center gap-3">
+          <span class="text-verde font-extrabold">${CONFIG.moneda}${p.precio.toLocaleString()}</span>
+          <button onclick="eliminarItem(${i})"
+            class="text-red-400 text-xs px-2 py-1 hover:text-red-300">✕</button>
+        </div>
+      </div>
+    `;
+  });
+
+  document.getElementById("totalCarrito").innerText = `${CONFIG.moneda}${total.toLocaleString()}`;
+  document.getElementById("modalCarrito").classList.remove("hidden");
+}
+
+function eliminarItem(i) {
+  carrito.splice(i, 1);
+  actualizarContador();
+  carrito.length === 0 ? cerrarCarrito() : abrirCarrito();
 }
 
 function abrirCarrito() {
@@ -348,17 +390,70 @@ function cerrarFormulario() {
   document.getElementById("modal").classList.add("hidden");
 }
 
-// ── WHATSAPP ──
+// ── ENVIAR POR WHATSAPP ──
 function enviarPedido() {
-  let mensaje = "Pedido:%0A";
+  const nombre    = document.getElementById("nombre").value.trim();
+  const apellido  = document.getElementById("apellido").value.trim();
+  const direccion = document.getElementById("direccion").value.trim();
+  const tipo      = document.getElementById("tipo").value;
+  const pago      = document.querySelector('input[name="pago"]:checked')?.value || "No especificado";
 
+  if (!nombre || !apellido) {
+    alert("Completá al menos nombre y apellido");
+    return;
+  }
+
+  let costoDelivery = 0;
+  let zonaNombre    = "";
+  if (tipo === "Delivery") {
+    if (!direccion) {
+      alert("Ingresá tu dirección para el delivery");
+      return;
+    }
+    const zonaSelect = document.getElementById("zona");
+    costoDelivery    = parseInt(zonaSelect.value);
+    zonaNombre       = zonaSelect.options[zonaSelect.selectedIndex].text;
+  }
+
+  let subtotal = 0;
+  carrito.forEach(p => subtotal += p.precio);
+  const total = subtotal + costoDelivery;
+
+  let mensaje = `🛵 *Nuevo Pedido*%0A`;
+  mensaje += `━━━━━━━━━━━━━━━%0A`;
+  mensaje += `👤 *Cliente:* ${nombre} ${apellido}%0A`;
+  mensaje += `📦 *Tipo:* ${tipo}%0A`;
+
+  if (tipo === "Delivery") {
+    mensaje += `📍 *Dirección:* ${direccion}%0A`;
+    mensaje += `🗺️ *Zona:* ${zonaNombre}%0A`;
+  }
+
+  mensaje += `💳 *Pago:* ${pago}`;
+  if (pago === "Transferencia") mensaje += ` (Alias: ${CONFIG.pagos.alias})`;
+
+  mensaje += `%0A%0A🍽️ *Productos:*%0A`;
   carrito.forEach(p => {
-    mensaje += `- ${p.nombre} (${CONFIG.moneda}${p.precio})%0A`;
+    mensaje += `• ${p.nombre} — ${CONFIG.moneda}${p.precio.toLocaleString()}%0A`;
   });
+
+  mensaje += `%0A━━━━━━━━━━━━━━━%0A`;
+  mensaje += `🧾 *Subtotal:* ${CONFIG.moneda}${subtotal.toLocaleString()}%0A`;
+
+  if (tipo === "Delivery") {
+    mensaje += costoDelivery > 0
+      ? `🚗 *Delivery:* ${CONFIG.moneda}${costoDelivery.toLocaleString()}%0A`
+      : `🚗 *Delivery:* Gratis%0A`;
+  }
+
+  mensaje += `💰 *Total: ${CONFIG.moneda}${total.toLocaleString()}*`;
 
   window.open(`https://wa.me/${CONFIG.telefono}?text=${mensaje}`, "_blank");
 
   carrito = [];
   actualizarContador();
   cerrarFormulario();
+  document.getElementById("nombre").value    = "";
+  document.getElementById("apellido").value  = "";
+  document.getElementById("direccion").value = "";
 }
