@@ -202,14 +202,25 @@
       <option value="Retiro">🏠 Retiro en local</option>
     </select>
 
-    <!-- Sección delivery (se oculta si elige Retiro) -->
-    <div id="seccionDelivery">
-      <input id="direccion" placeholder="📍 Dirección"
-        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
-      <!-- <select id="zona"
-        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
-      </select> -->
-    </div>
+   <div id="seccionDelivery">
+
+  <!-- DIRECCION CLIENTE -->
+  <input id="direccion" placeholder="📍 Dirección"
+    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
+
+  <!-- ZONAS -->
+  <select id="zona"
+    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
+  </select>
+
+</div>
+
+<!-- RETIRO EN LOCAL -->
+<div id="seccionRetiro" class="hidden mb-3">
+  <div class="bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-700">
+    📍 Retirás en: <strong>Blanco Escalada</strong>
+  </div>
+</div>
 
     <!-- Método de pago -->
     <div class="border border-gray-200 rounded-xl px-4 py-3 mb-4">

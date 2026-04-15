@@ -3,7 +3,7 @@ const CONFIG = {
   nombre:   "Don Chipá",
   telefono: "5493454175555", // sin + ni espacios
 
-  moneda: "$",
+  moneda: "",
 
   pagos: {
     efectivo: true,
@@ -11,13 +11,10 @@ const CONFIG = {
     alias: "Donmateochipa"
   },
 
-  // zonas: [
-  //   { nombre: "Centro",     costo: 0    },
-  //   { nombre: "Zona Norte", costo: 2000 },
-  //   { nombre: "Zona Sur",   costo: 2000 },
-  //   { nombre: "Zona Oeste", costo: 3000 },
-  //   { nombre: "Afueras",    costo: 5000 },
-  // ],
+  zonas: [
+    { nombre: "Villa Urquiza y Alrededores",  costo: 0    },
+    { nombre: "Afueras",    costo: 'Consultar precio' },
+  ],
 
   // ────────────────
   // MINORISTA
@@ -26,8 +23,8 @@ const CONFIG = {
      {
       id: "2kg",
       label: "2 KG",
-      precio: 20000,
-      personas: "5 a 6 personas",
+      precio: 40000,
+      personas: "8 a 9 personas",
       icon: "fa-solid fa-basket-shopping"
     },
     {
