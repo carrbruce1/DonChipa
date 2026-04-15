@@ -8,7 +8,7 @@ const CONFIG = {
   pagos: {
     efectivo: true,
     transferencia: true,
-    alias: "ALIAS_ACA"
+    alias: "Donmateochipa"
   },
 
   // zonas: [
