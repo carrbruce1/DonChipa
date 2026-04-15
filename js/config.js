@@ -23,6 +23,13 @@ const CONFIG = {
   // MINORISTA
   // ────────────────
   minoristaOpciones: [
+     {
+      id: "2kg",
+      label: "2 KG",
+      precio: 20000,
+      personas: "5 a 6 personas",
+      icon: "fa-solid fa-basket-shopping"
+    },
     {
       id: "1kg",
       label: "1 KG",
