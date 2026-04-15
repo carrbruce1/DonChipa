@@ -247,3 +247,52 @@ function toggleDelivery() {
   if(seccionDelivery) seccionDelivery.classList.toggle("hidden", t !== "Delivery");
   if(seccionRetiro) seccionRetiro.classList.toggle("hidden", t === "Delivery");
 }
+
+
+
+// Temporizador
+
+function actualizarTemporizador() {
+  const ahora = new Date();
+  const diaSemana = ahora.getDay(); // 0: Dom, 4: Jue, 6: Sab
+  const timerDoc = document.getElementById("timer");
+  const textoDoc = document.getElementById("texto-promo");
+  
+  if (!timerDoc) return;
+
+  let objetivo = new Date();
+  let modo = ""; // "empieza" o "termina"
+
+  // Si es Jueves(4), Viernes(5) o Sábado(6) -> La promo está ACTIVA
+  if (diaSemana >= 4 && diaSemana <= 6) {
+    modo = "termina";
+    // El objetivo es el Domingo a las 00:00:00
+    objetivo.setDate(ahora.getDate() + (7 - diaSemana));
+    objetivo.setHours(0, 0, 0, 0);
+    textoDoc.innerText = "🔥 ¡PROMO ACTIVA! El envío gratis termina en:";
+  } 
+  else {
+    modo = "empieza";
+    // El objetivo es el Jueves a las 00:00:00
+    let diasParaJueves = (4 - diaSemana + 7) % 7;
+    if (diasParaJueves === 0) diasParaJueves = 7; 
+    objetivo.setDate(ahora.getDate() + diasParaJueves);
+    objetivo.setHours(0, 0, 0, 0);
+    textoDoc.innerText = "🚚 El Envío Gratis comienza en:";
+  }
+
+  const diff = objetivo - ahora;
+
+  // Calculamos horas, minutos y segundos
+  const horas = Math.floor(diff / (1000 * 60 * 60));
+  const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const segundos = Math.floor((diff % (1000 * 60)) / 1000);
+
+  // Formato 00:00:00
+  timerDoc.innerText = 
+    `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+}
+
+// Iniciamos el temporizador
+setInterval(actualizarTemporizador, 1000);
+actualizarTemporizador();
