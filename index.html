@@ -34,10 +34,8 @@
 
 <body class="bg-gradient-to-r from-[#0f1f0f] via-[#1a2e1a] to-[#0f1f0f] text-white font-nunito">
 
-  <!-- CONTENEDOR GLOBAL (LA CLAVE DEL CENTRADO) -->
   <div>
 
-    <!-- HERO -->
     <section class="text-center pt-14 pb-10 px-6 bg-gradient-to-b from-[#0f1f0f] to-[#1a2e1a] flex flex-col items-center">
 
       <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-dorado shadow-lg mb-5">
@@ -54,7 +52,6 @@
 
     </section>
 
-    <!-- BUSCADOR -->
     <div class="px-5 -mt-3">
       <div class="flex items-center gap-3 bg-[#0f1f0f] border border-dorado/20 rounded-full px-5 py-3 shadow-md">
         <i class="fa fa-search text-dorado/40"></i>
@@ -64,54 +61,48 @@
       </div>
     </div>
 
-    <!-- CATEGORIAS -->
     <div id="categorias" class="flex gap-3 overflow-x-auto px-5 mt-5 pb-1"></div>
 
-    <!-- PRODUCTOS -->
     <div id="productos" class="px-5 mt-4 mb-28"></div>
 
-<!-- Footer -->
-  <footer class="bg-[#0f1f0f] border-t border-dorado/20 px-6 py-10 mt-10">
-    <div class="flex flex-col items-center mb-6">
-      <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-dorado mb-3">
-        <img src="img/donChipa-removebg-preview.png" alt="Logo" class="w-full h-full object-cover">
+    <footer class="bg-[#0f1f0f] border-t border-dorado/20 px-6 py-10 mt-10">
+      <div class="flex flex-col items-center mb-6">
+        <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-dorado mb-3">
+          <img src="img/donChipa-removebg-preview.png" alt="Logo" class="w-full h-full object-cover">
+        </div>
+        <h2 class="font-playfair text-xl text-doradoClaro">Don Chipá</h2>
+        <p class="text-dorado/50 text-xs mt-1">Sabor Tradicional del Litoral</p>
       </div>
-      <h2 class="font-playfair text-xl text-doradoClaro">Don Chipá</h2>
-      <p class="text-dorado/50 text-xs mt-1">Sabor Tradicional del Litoral</p>
-    </div>
 
-    <div class="flex justify-center gap-5 mb-6">
-      <a href="https://www.instagram.com/donchipamateo/" target="_blank" class="w-10 h-10 rounded-full bg-verdeClaro border border-dorado/20
-                         flex items-center justify-center text-dorado/60 hover:text-doradoClaro
-                         hover:border-dorado transition-colors">
-        <i class="fab fa-instagram text-lg"></i>
-      </a>
-      <a href="https://wa.me/5493454175555" target="_blank" class="w-10 h-10 rounded-full bg-verdeClaro border border-dorado/20
-                         flex items-center justify-center text-dorado/60 hover:text-doradoClaro
-                         hover:border-dorado transition-colors">
-        <i class="fab fa-whatsapp text-lg"></i>
-      </a>
-    </div>
+      <div class="flex justify-center gap-5 mb-6">
+        <a href="https://www.instagram.com/donchipamateo/" target="_blank" class="w-10 h-10 rounded-full bg-verdeClaro border border-dorado/20
+                           flex items-center justify-center text-dorado/60 hover:text-doradoClaro
+                           hover:border-dorado transition-colors">
+          <i class="fab fa-instagram text-lg"></i>
+        </a>
+        <a href="https://wa.me/5493454175555" target="_blank" class="w-10 h-10 rounded-full bg-verdeClaro border border-dorado/20
+                           flex items-center justify-center text-dorado/60 hover:text-doradoClaro
+                           hover:border-dorado transition-colors">
+          <i class="fab fa-whatsapp text-lg"></i>
+        </a>
+      </div>
 
-    <div class="border-t border-dorado/20 pt-5 text-center flex flex-col gap-1">
-      <p class="text-xs text-dorado/40">
-        © 2026 Don Chipá — Todos los derechos reservados
-      </p>
-      <p class="text-[10px] text-dorado/30 tracking-widest uppercase">
-        Developed by <span class="text-dorado/60 font-bold">BC Studio</span>
-      </p>
-    </div>
-  </footer>
+      <div class="border-t border-dorado/20 pt-5 text-center flex flex-col gap-1">
+        <p class="text-xs text-dorado/40">
+          © 2026 Don Chipá — Todos los derechos reservados
+        </p>
+        <p class="text-[10px] text-dorado/30 tracking-widest uppercase">
+          Developed by <span class="text-dorado/60 font-bold">BC Studio</span>
+        </p>
+      </div>
+    </footer>
 
-    
-    <!-- BOTON CARRITO -->
     <button onclick="abrirCarrito()" id="btnCarrito"
       class="fixed bottom-6 right-4 bg-dorado text-white font-bold flex items-center gap-2 px-5 py-3 rounded-full shadow-lg active:scale-95 transition">
       🛒
       <span id="contador" class="bg-white text-dorado text-xs px-2 py-0.5 rounded-full">0</span>
     </button>
 
-    <!-- MODAL CARRITO -->
     <div id="modalCarrito" class="hidden fixed inset-0 bg-black/70 z-50 flex items-end justify-center">
       <div class="bg-[#1a2e1a] w-full md:max-w-[520px] rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto transition-all duration-300">
 
@@ -135,7 +126,6 @@
       </div>
     </div>
 
-    <!-- MODAL MINORISTA -->
     <div id="modalMinorista" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
       <div class="bg-crema text-black rounded-2xl p-6 w-full max-w-sm">
 
@@ -148,7 +138,6 @@
       </div>
     </div>
 
-    <!-- MODAL TIPO -->
     <div id="modalTipo" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
       <div class="bg-crema text-black rounded-2xl p-6 w-full max-w-sm">
 
@@ -162,93 +151,79 @@
       </div>
     </div>
 
-    <!-- MODAL MAYORISTA -->
     <div id="modalMayorista" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
       <div class="bg-crema text-black rounded-2xl p-6 w-full max-w-sm">
 
-        <h2 class="font-playfair text-xl mb-4">Mayorista</h2>
-
-        <div class="flex flex-col gap-3">
-          <button onclick="agregarMayorista('3kg','3 KG',49500)" class="bg-green-900 text-white py-3 rounded-xl">3 KG</button>
-          <button onclick="agregarMayorista('5kg','5 KG',82500)" class="bg-green-900 text-white py-3 rounded-xl">5 KG</button>
-          <button onclick="agregarMayorista('10kg','10 KG',165000)" class="bg-green-900 text-white py-3 rounded-xl">10 KG</button>
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="font-playfair text-xl">Mayorista</h2>
+          <button onclick="cerrarModalMayorista()" class="text-gray-500 w-8 h-8 rounded-full hover:bg-black/5">✕</button>
         </div>
 
+        <div id="opcionesMayorista" class="flex flex-col gap-1"></div>
+
+        <button onclick="cerrarModalMayorista()" class="mt-4 w-full text-center text-sm text-gray-500 py-2">Cerrar</button>
+
       </div>
     </div>
 
-    <!-- MODAL FORM -->
-     <div id="modal"
-  class="hidden fixed inset-0 bg-black/80 z-[300] flex items-center justify-center px-4">
-  <div class="pop-in bg-white text-black rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto">
+    <div id="modal" class="hidden fixed inset-0 bg-black/80 z-[300] flex items-center justify-center px-4">
+      <div class="pop-in bg-white text-black rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto">
 
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-5">
-      <h2 class="font-bebas text-xl tracking-wide">Datos del cliente</h2>
-      <button onclick="cerrarFormulario()"
-        class="bg-gray-100 text-gray-500 w-8 h-8 rounded-full flex items-center justify-center text-sm">
-        ✕
-      </button>
-    </div>
+        <div class="flex justify-between items-center mb-5">
+          <h2 class="font-bebas text-xl tracking-wide">Datos del cliente</h2>
+          <button onclick="cerrarFormulario()"
+            class="bg-gray-100 text-gray-500 w-8 h-8 rounded-full flex items-center justify-center text-sm">
+            ✕
+          </button>
+        </div>
 
-    <!-- Nombre y Apellido -->
-    <div class="flex gap-2 mb-3">
-      <input id="nombre" placeholder="Nombre"
-        class="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-rojo">
-      <input id="apellido" placeholder="Apellido"
-        class="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-rojo">
-    </div>
+        <div class="flex gap-2 mb-3">
+          <input id="nombre" placeholder="Nombre"
+            class="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-rojo">
+          <input id="apellido" placeholder="Apellido"
+            class="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-rojo">
+        </div>
 
-    <!-- Tipo de pedido -->
-    <select id="tipo" onchange="toggleDelivery()"
-      class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
-      <option value="Delivery">🛵 Delivery</option>
-      <option value="Retiro">🏠 Retiro en local</option>
-    </select>
+        <select id="tipo" onchange="toggleDelivery()"
+          class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
+          <option value="Delivery">🛵 Delivery</option>
+          <option value="Retiro">🏠 Retiro en local</option>
+        </select>
 
-   <div id="seccionDelivery">
+        <div id="seccionDelivery">
+          <input id="direccion" placeholder="📍 Dirección"
+            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
 
-  <!-- DIRECCION CLIENTE -->
-  <input id="direccion" placeholder="📍 Dirección"
-    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
+          <select id="zona"
+            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
+          </select>
+        </div>
 
-  <!-- ZONAS -->
-  <select id="zona"
-    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
-  </select>
+        <div id="seccionRetiro" class="hidden mb-3">
+          <div class="bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-700">
+            📍 Retirás en: <strong>Blanco Escalada</strong>
+          </div>
+        </div>
 
-</div>
+        <div class="border border-gray-200 rounded-xl px-4 py-3 mb-4">
+          <p class="text-xs text-gray-400 font-bold uppercase tracking-wide mb-2">Método de pago</p>
+          <div id="metodosPago" class="flex flex-col gap-2"></div>
 
-<!-- RETIRO EN LOCAL -->
-<div id="seccionRetiro" class="hidden mb-3">
-  <div class="bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-700">
-    📍 Retirás en: <strong>Blanco Escalada</strong>
-  </div>
-</div>
+          <div id="aliasInfo" class="hidden mt-3 bg-gray-50 rounded-lg px-3 py-2 text-xs text-gray-600">
+            <span class="font-bold">Alias MP:</span>
+            <span id="aliasTexto"></span>
+          </div>
+        </div>
 
-    <!-- Método de pago -->
-    <div class="border border-gray-200 rounded-xl px-4 py-3 mb-4">
-      <p class="text-xs text-gray-400 font-bold uppercase tracking-wide mb-2">Método de pago</p>
-      <div id="metodosPago" class="flex flex-col gap-2"></div>
+        <button onclick="enviarPedido()"
+          class="w-full bg-[#25d366] text-white font-bebas text-xl tracking-wide
+                 py-3 rounded-xl flex items-center justify-center gap-2">
+          <i class="fab fa-whatsapp text-xl"></i>
+          Enviar por WhatsApp
+        </button>
 
-      <!-- Alias MP (solo si elige transferencia) -->
-      <div id="aliasInfo" class="hidden mt-3 bg-gray-50 rounded-lg px-3 py-2 text-xs text-gray-600">
-        <span class="font-bold">Alias MP:</span>
-        <span id="aliasTexto"></span>
       </div>
     </div>
-
-    <!-- Botón enviar -->
-    <button onclick="enviarPedido()"
-      class="w-full bg-[#25d366] text-white font-bebas text-xl tracking-wide
-             py-3 rounded-xl flex items-center justify-center gap-2">
-      <i class="fab fa-whatsapp text-xl"></i>
-      Enviar por WhatsApp
-    </button>
-
-  </div>
-</div>
-
 
   </div>
 
@@ -257,11 +232,11 @@
 
   <div id="toast"
   class="fixed bottom-6 left-1/2 -translate-x-1/2
-         bg-[#0f1f0f] text-white px-5 py-3 rounded-xl
-         border border-dorado/20 shadow-lg
-         opacity-0 pointer-events-none
-         transition-all duration-300 z-[999]">
-</div>
+           bg-[#0f1f0f] text-white px-5 py-3 rounded-xl
+           border border-dorado/20 shadow-lg
+           opacity-0 pointer-events-none
+           transition-all duration-300 z-[999]">
+  </div>
 
 </body>
 </html>

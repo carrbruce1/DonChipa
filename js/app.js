@@ -41,9 +41,7 @@ function renderZonas() {
 function renderPagos() {
   const cont = document.getElementById("metodosPago");
   if (!cont) return;
-  
   let htmlContenido = "";
-
   if (CONFIG.pagos.efectivo) {
     htmlContenido += `
       <label class="flex items-center gap-2 cursor-pointer">
@@ -51,7 +49,6 @@ function renderPagos() {
         <span class="text-gray-700 text-sm font-medium">💵 Efectivo</span>
       </label>`;
   }
-
   if (CONFIG.pagos.transferencia) {
     htmlContenido += `
       <label class="flex items-center gap-2 cursor-pointer mt-2">
@@ -59,16 +56,12 @@ function renderPagos() {
         <span class="text-gray-700 text-sm font-medium">📲 Transferencia</span>
       </label>`;
   }
-
   cont.innerHTML = htmlContenido;
-
-  // Listeners para el Alias
   const radios = cont.querySelectorAll('input[name="pago"]');
   radios.forEach(radio => {
     radio.addEventListener("change", () => {
       const aliasInfo = document.getElementById("aliasInfo");
       const aliasTexto = document.getElementById("aliasTexto");
-      
       if (radio.value === "Transferencia" && radio.checked) {
         if (aliasTexto) aliasTexto.innerText = CONFIG.pagos.alias;
         if (aliasInfo) aliasInfo.classList.remove("hidden");
@@ -78,20 +71,19 @@ function renderPagos() {
     });
   });
 }
+
 // ── PRODUCTOS ──
 function renderProductos(lista = CONFIG.productos) {
   const cont = document.getElementById("productos");
   if(!cont) return;
   cont.innerHTML = "";
   const textoBusqueda = document.getElementById("buscador").value.trim().toLowerCase();
-  
   let filtrados = lista;
   if (textoBusqueda !== "") {
     filtrados = lista.filter(p => p.nombre.toLowerCase().includes(textoBusqueda) || p.descripcion.toLowerCase().includes(textoBusqueda));
   } else if (categoriaActiva !== "Todo") {
     filtrados = lista.filter(p => p.categoria === categoriaActiva);
   }
-
   const grupos = {};
   CONFIG.categorias.forEach(c => grupos[c.id] = []);
   filtrados.forEach(p => { if (grupos[p.categoria]) grupos[p.categoria].push(p); });
@@ -106,7 +98,7 @@ function renderProductos(lista = CONFIG.productos) {
       let rutaImagen = p.categoria === "Minorista" ? "img/chipa.jpeg" : "img/congelados.jpeg";
       return `<div class="flex-shrink-0 w-52 md:w-full bg-[#0f1f0f] rounded-2xl overflow-hidden border border-dorado/20 shadow-lg">
         <div class="w-full h-32 flex items-center justify-center bg-verdeClaro overflow-hidden">
-          <img src="${rutaImagen}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<i class=\\'${p.icon} text-doradoClaro text-2xl\\'></i>'">
+          <img src="${rutaImagen}" class="w-full h-full object-cover">
         </div>
         <div class="p-4">
           <div class="font-extrabold text-sm mb-1 text-white">${p.nombre}</div>
@@ -125,21 +117,51 @@ function renderProductos(lista = CONFIG.productos) {
 
 function buscar() { renderProductos(); }
 
-// ── MODALES  ──
+// ── MODALES CON IMAGEN ──
 function abrirModalMinorista() {
   const cont = document.getElementById("opcionesMinorista");
   if(cont) {
     cont.innerHTML = "";
     CONFIG.minoristaOpciones.forEach(op => {
-      cont.innerHTML += `<button onclick="seleccionarMinorista('${op.id}', '${op.label}', ${op.precio})" class="flex justify-between items-center bg-[#1a2e1a] text-white px-4 py-3 rounded-xl w-full mb-2 border border-dorado/10"><div class="flex items-center gap-3"><i class="${op.icon} text-doradoClaro"></i><div class="text-left"><div class="font-bold">${op.label}</div><div class="text-[10px] text-gray-400">${op.personas}</div></div></div><span class="text-doradoClaro font-bold">$${op.precio.toLocaleString()}</span></button>`;
+      cont.innerHTML += `
+        <button onclick="seleccionarMinorista('${op.id}', '${op.label}', ${op.precio})" 
+                class="flex justify-between items-center bg-[#1a2e1a] text-white px-4 py-3 rounded-xl w-full mb-2 border border-dorado/10">
+          <div class="flex items-center gap-3">
+            <img src="img/iconoChipa.jpeg" class="w-10 h-10 rounded-full object-cover border border-dorado/30 shadow-sm">
+            <div class="text-left">
+              <div class="font-bold">${op.label}</div>
+              <div class="text-[10px] text-gray-400">${op.personas}</div>
+            </div>
+          </div>
+          <span class="text-doradoClaro font-bold">$${op.precio.toLocaleString()}</span>
+        </button>`;
     });
   }
   document.getElementById("modalMinorista").classList.remove("hidden");
 }
 
-function cerrarModalMinorista() {
-  document.getElementById("modalMinorista").classList.add("hidden");
+function abrirModalMayorista() {
+  const modalM = document.getElementById("modalMayorista");
+  const contenedorOpciones = modalM.querySelector("#opcionesMayorista");
+  if(contenedorOpciones) {
+    contenedorOpciones.innerHTML = "";
+    CONFIG.mayoristaOpciones.forEach(op => {
+      contenedorOpciones.innerHTML += `
+        <button onclick="agregarMayorista('${op.id}','${op.label}',${op.precio})" 
+                class="flex items-center gap-4 bg-green-900 text-white px-4 py-3 rounded-xl w-full border border-white/10 mb-2">
+          <img src="img/iconoChipa.jpeg" class="w-10 h-10 rounded-full object-cover border border-dorado/30 shadow-sm">
+          <div class="flex-1 text-left">
+            <div class="font-bold">${op.label}</div>
+            <div class="text-xs text-white/60">$${op.precio.toLocaleString()}</div>
+          </div>
+        </button>`;
+    });
+  }
+  modalM.classList.remove("hidden");
 }
+
+function cerrarModalMinorista() { document.getElementById("modalMinorista").classList.add("hidden"); }
+function cerrarModalMayorista() { document.getElementById("modalMayorista").classList.add("hidden"); }
 
 function seleccionarMinorista(id, label, precio) {
   seleccionPendiente = { label, precio };
@@ -153,9 +175,6 @@ function confirmarTipo(tipo) {
   actualizarContador();
   document.getElementById("modalTipo").classList.add("hidden");
 }
-
-function abrirModalMayorista() { document.getElementById("modalMayorista").classList.remove("hidden"); }
-function cerrarModalMayorista() { document.getElementById("modalMayorista").classList.add("hidden"); }
 
 function agregarMayorista(id, label, precio) {
   carrito.push({ nombre: `Mayorista ${label}`, precio: precio });
@@ -179,9 +198,7 @@ function abrirCarrito() {
   document.getElementById("modalCarrito").classList.remove("hidden");
 }
 
-function cerrarCarrito() {
-  document.getElementById("modalCarrito").classList.add("hidden");
-}
+function cerrarCarrito() { document.getElementById("modalCarrito").classList.add("hidden"); }
 
 function eliminarItem(i) {
   carrito.splice(i, 1);
@@ -190,17 +207,12 @@ function eliminarItem(i) {
   else abrirCarrito();
 }
 
-// ── FINALIZAR Y FORMULARIO ──
-
-// Esta abre el form de datos y cierra el carrito
 function cerrarCarritoYFormulario() {
   cerrarCarrito();
   document.getElementById("modal").classList.remove("hidden");
 }
 
-function cerrarFormulario() {
-  document.getElementById("modal").classList.add("hidden");
-}
+function cerrarFormulario() { document.getElementById("modal").classList.add("hidden"); }
 
 function enviarPedido() {
   const n = document.getElementById("nombre").value.trim();
@@ -208,42 +220,25 @@ function enviarPedido() {
   const d = document.getElementById("direccion").value.trim();
   const t = document.getElementById("tipo").value;
   const p = document.querySelector('input[name="pago"]:checked')?.value;
-  
   const selectZona = document.getElementById("zona");
   const zonaTexto = selectZona.options[selectZona.selectedIndex]?.text || "No especificada";
-
   if (!n || !a) { alert("Che, faltan el nombre y apellido."); return; }
   if (t === "Delivery" && !d) { alert("Poné la dirección para el delivery."); return; }
   if (!p) { alert("Elegí un método de pago."); return; }
-
   let sub = 0; 
   carrito.forEach(x => sub += x.precio);
-  
   let mensaje = `*Don Chipá - Nuevo Pedido*%0A━━━━━━━━━━━━━━━%0A👤 *Cliente:* ${n} ${a}%0A📦 *Método:* ${t}%0A💳 *Pago:* ${p}%0A`;
-  
   if(t === "Delivery") {
-    mensaje += `📍 *Dirección:* ${d}%0A`;
-    mensaje += `🗺️ *Zona:* ${zonaTexto}%0A`;
+    mensaje += `📍 *Dirección:* ${d}%0A🗺️ *Zona:* ${zonaTexto}%0A`;
   } else {
     mensaje += `📍 *Retira en local (Blanco Escalada)*%0A`;
   }
-
   mensaje += `%0A🍴 *Productos:*%0A`;
-  // ACÁ EL CAMBIO: Se agrega el precio al lado de cada producto
-  carrito.forEach(x => {
-    mensaje += `• ${x.nombre} - $${x.precio.toLocaleString()}%0A`;
-  });
-  
+  carrito.forEach(x => { mensaje += `• ${x.nombre} - $${x.precio.toLocaleString()}%0A`; });
   mensaje += `%0A💰 *Total: $${sub.toLocaleString()}*`;
-  
   window.open(`https://wa.me/${CONFIG.telefono}?text=${mensaje}`);
-
-  // Recarga para limpiar la página
-  setTimeout(() => {
-    location.reload();
-  }, 500); 
+  setTimeout(() => { location.reload(); }, 500); 
 }
-
 
 function toggleDelivery() {
   const t = document.getElementById("tipo").value;
