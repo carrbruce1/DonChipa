@@ -84,6 +84,7 @@ const CONFIG = {
       id: "Mayorista",
       nombre: "Mayorista",
       emoji: "📦"
+      
     },
   ],
 

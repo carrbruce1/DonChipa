@@ -14,21 +14,13 @@ document.addEventListener("DOMContentLoaded", () => {
 function renderCategorias() {
   const cont = document.getElementById("categorias");
   cont.innerHTML = "";
-
-  const todas = [
-    { id: "Todo", nombre: "Todo", emoji: "🫓" },
-    ...CONFIG.categorias
-  ];
+  const todas = [{ id: "Todo", nombre: "Todo" }, ...CONFIG.categorias];
 
   todas.forEach(cat => {
-    const activa = cat.id === categoriaActiva
-      ? "bg-dorado text-white"
-      : "bg-transparent text-doradoClaro";
-
+    const activa = cat.id === categoriaActiva ? "bg-dorado text-white" : "bg-transparent text-doradoClaro";
     cont.innerHTML += `
       <button onclick="filtrar('${cat.id}')"
-        class="flex-shrink-0 flex items-center gap-1.5 px-5 py-2 rounded-full
-               border border-dorado text-sm font-bold transition-colors ${activa}">
+        class="flex-shrink-0 px-5 py-2 rounded-full border border-dorado text-sm font-bold transition-colors ${activa}">
         <span>${cat.nombre}</span>
       </button>
     `;
@@ -41,125 +33,70 @@ function filtrar(id) {
   renderProductos();
 }
 
-// ── ZONAS ──
+// ── ZONAS Y PAGOS ──
 function renderZonas() {
   const select = document.getElementById("zona");
   if(!select) return;
   select.innerHTML = "";
   CONFIG.zonas.forEach(z => {
-    const label = z.costo === 0
-      ? `${z.nombre} — Envío gratis`
-      : `${z.nombre} — +${CONFIG.moneda}${z.costo.toLocaleString()}`;
-    select.innerHTML += `<option value="${z.costo}">${label}</option>`;
+    select.innerHTML += `<option value="${z.costo}">${z.nombre} ${z.costo === 0 ? '(Gratis)' : ''}</option>`;
   });
 }
 
-// ── PAGOS ──
 function renderPagos() {
   const cont = document.getElementById("metodosPago");
   if(!cont) return;
   cont.innerHTML = "";
-
   if (CONFIG.pagos.efectivo) {
-    cont.innerHTML += `
-      <label class="flex items-center gap-2 cursor-pointer">
-        <input type="radio" name="pago" value="Efectivo" checked>
-        <span class="text-sm">💵 Efectivo</span>
-      </label>
-    `;
+    cont.innerHTML += `<label class="flex items-center gap-2"><input type="radio" name="pago" value="Efectivo" checked> <span class="text-sm text-white">💵 Efectivo</span></label>`;
   }
-
   if (CONFIG.pagos.transferencia) {
-    cont.innerHTML += `
-      <label class="flex items-center gap-2 cursor-pointer">
-        <input type="radio" name="pago" value="Transferencia"
-          ${!CONFIG.pagos.efectivo ? "checked" : ""}>
-        <span class="text-sm">📲 Transferencia</span>
-      </label>
-    `;
+    cont.innerHTML += `<label class="flex items-center gap-2 mt-2"><input type="radio" name="pago" value="Transferencia"> <span class="text-sm text-white">📲 Transferencia</span></label>`;
   }
-
-  cont.querySelectorAll('input[name="pago"]').forEach(radio => {
-    radio.addEventListener("change", () => {
-      const aliasInfo  = document.getElementById("aliasInfo");
-      const aliasTexto = document.getElementById("aliasTexto");
-      if (radio.value === "Transferencia" && radio.checked) {
-        aliasTexto.innerText = CONFIG.pagos.alias;
-        aliasInfo.classList.remove("hidden");
-      } else {
-        aliasInfo.classList.add("hidden");
-      }
-    });
-  });
 }
 
-// ── PRODUCTOS (SIN PRECIOS EN LA CARD) ──
+// ── PRODUCTOS (FOTO DISTINTA POR CATEGORÍA) ──
 function renderProductos(lista = CONFIG.productos) {
   const cont = document.getElementById("productos");
   cont.innerHTML = "";
-  const buscando = document.getElementById("buscador").value.trim() !== "";
-
-  if (buscando) {
-    if (lista.length === 0) {
-      cont.innerHTML = `<p class="text-center text-dorado/50 mt-10">No encontramos ese producto</p>`;
-      return;
-    }
-    lista.forEach(p => {
-      const accion = p.categoria === "Minorista" ? `abrirModalMinorista()` : `abrirModalMayorista()`;
-      cont.innerHTML += `
-        <div class="flex items-center gap-4 py-4 border-b border-dorado/10">
-          <div class="w-14 h-14 rounded-xl bg-verdeClaro flex items-center justify-center">
-            <i class="${p.icon} text-doradoClaro text-xl"></i>
-          </div>
-          <div class="flex-1">
-            <div class="font-extrabold text-sm text-white">${p.nombre}</div>
-            <div class="text-xs text-dorado/50 mt-1 mb-1">${p.descripcion}</div>
-          </div>
-          <button onclick="${accion}"
-            class="w-9 h-9 rounded-full bg-dorado text-white flex items-center justify-center">
-            <i class="fa-solid fa-plus text-sm"></i>
-          </button>
-        </div>
-      `;
-    });
-    return;
-  }
+  const textoBusqueda = document.getElementById("buscador").value.trim().toLowerCase();
 
   let filtrados = lista;
-  if (categoriaActiva !== "Todo") {
+  if (textoBusqueda !== "") {
+    filtrados = lista.filter(p => p.nombre.toLowerCase().includes(textoBusqueda) || p.descripcion.toLowerCase().includes(textoBusqueda));
+  } else if (categoriaActiva !== "Todo") {
     filtrados = lista.filter(p => p.categoria === categoriaActiva);
   }
 
-  const orden = CONFIG.categorias.map(c => c.id);
   const grupos = {};
-  orden.forEach(id => grupos[id] = []);
-  filtrados.forEach(p => {
-    if (grupos[p.categoria]) grupos[p.categoria].push(p);
-  });
+  CONFIG.categorias.forEach(c => grupos[c.id] = []);
+  filtrados.forEach(p => { if (grupos[p.categoria]) grupos[p.categoria].push(p); });
 
   Object.entries(grupos).forEach(([catId, productos]) => {
     if (productos.length === 0) return;
-    const catInfo = CONFIG.categorias.find(c => c.id === catId);
     const seccion = document.createElement("div");
     seccion.className = "mt-8";
     seccion.innerHTML = `
-      <h2 class="font-playfair text-2xl text-doradoClaro mb-4">${catInfo.nombre}</h2>
-      <div class="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:overflow-visible">
+      <h2 class="font-playfair text-2xl text-doradoClaro mb-4">${catId}</h2>
+      <div class="flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-3">
         ${productos.map(p => {
           const accion = p.categoria === "Minorista" ? `abrirModalMinorista()` : `abrirModalMayorista()`;
+          
+          // Lógica de imagen: Minorista vs Mayorista
+          let rutaImagen = p.categoria === "Minorista" ? "img/chipa.jpeg" : "img/congelados.jpeg";
+          
+          const mediaHTML = `<img src="${rutaImagen}" class="w-full h-full object-cover" alt="${p.nombre}" onerror="this.parentElement.innerHTML='<i class=\\'${p.icon} text-doradoClaro text-2xl\\'></i>'">`;
+
           return `
-            <div class="flex-shrink-0 w-52 md:w-full bg-[#0f1f0f] rounded-2xl overflow-hidden border border-dorado/20 hover:scale-105 transition">
-              <div class="w-full h-32 flex items-center justify-center bg-verdeClaro">
-                <div class="w-14 h-14 rounded-xl bg-[#0f1f0f] flex items-center justify-center">
-                  <i class="${p.icon} text-doradoClaro text-2xl"></i>
-                </div>
+            <div class="flex-shrink-0 w-52 md:w-full bg-[#0f1f0f] rounded-2xl overflow-hidden border border-dorado/20 shadow-lg">
+              <div class="w-full h-32 flex items-center justify-center bg-verdeClaro overflow-hidden">
+                ${mediaHTML}
               </div>
               <div class="p-4">
                 <div class="font-extrabold text-sm mb-1 text-white">${p.nombre}</div>
-                <div class="text-xs text-dorado/50 mb-3">${p.descripcion}</div>
-                <div class="flex justify-end items-center">
-                  <button onclick="${accion}"
-                    class="w-9 h-9 rounded-full bg-dorado text-white flex items-center justify-center">
+                <div class="text-xs text-dorado/50 mb-3 h-8 overflow-hidden">${p.descripcion}</div>
+                <div class="flex justify-end">
+                  <button onclick="${accion}" class="w-10 h-10 rounded-full bg-dorado text-white shadow-md active:scale-90 transition">
                     <i class="fa-solid fa-plus"></i>
                   </button>
                 </div>
@@ -173,162 +110,106 @@ function renderProductos(lista = CONFIG.productos) {
   });
 }
 
-// ── BUSCAR ──
-function buscar(e) {
-  const texto = e.target.value.toLowerCase();
-  const filtrados = CONFIG.productos.filter(p =>
-    p.nombre.toLowerCase().includes(texto) ||
-    p.descripcion.toLowerCase().includes(texto)
-  );
-  renderProductos(filtrados);
-}
+// ── BUSCADOR ──
+function buscar() { renderProductos(); }
 
 // ── MODALES ──
 function abrirModalMinorista() {
   const cont = document.getElementById("opcionesMinorista");
   cont.innerHTML = "";
-  const precioMinoristaFijo = 7000;
   CONFIG.minoristaOpciones.forEach(op => {
     cont.innerHTML += `
-      <button onclick="seleccionarMinorista('${op.id}', '${op.label}', ${precioMinoristaFijo})"
-        class="flex justify-between items-center bg-[#1a2e1a] text-white px-4 py-3 rounded-xl w-full mb-2">
+      <button onclick="seleccionarMinorista('${op.id}', '${op.label}', ${op.precio})"
+        class="flex justify-between items-center bg-[#1a2e1a] text-white px-4 py-3 rounded-xl w-full mb-2 border border-dorado/10">
         <div class="flex items-center gap-3">
           <i class="${op.icon} text-doradoClaro"></i>
-          <div>
+          <div class="text-left">
             <div class="font-bold">${op.label}</div>
-            <div class="text-xs text-gray-400">${op.personas}</div>
+            <div class="text-[10px] text-gray-400">${op.personas}</div>
           </div>
         </div>
-        <span class="text-doradoClaro font-bold">${CONFIG.moneda}${precioMinoristaFijo.toLocaleString()}</span>
-      </button>
-    `;
+        <span class="text-doradoClaro font-bold">$${op.precio.toLocaleString()}</span>
+      </button>`;
   });
   document.getElementById("modalMinorista").classList.remove("hidden");
 }
 
-function cerrarModalMinorista() { document.getElementById("modalMinorista").classList.add("hidden"); }
-
 function seleccionarMinorista(id, label, precio) {
   seleccionPendiente = { label, precio };
-  cerrarModalMinorista();
+  document.getElementById("modalMinorista").classList.add("hidden");
   document.getElementById("tipoTitulo").innerText = label;
   document.getElementById("modalTipo").classList.remove("hidden");
 }
 
 function confirmarTipo(tipo) {
-  if (!seleccionPendiente) return;
-  carrito.push({ nombre: `${seleccionPendiente.label} (${tipo})`, precio: seleccionPendiente.precio });
+  carrito.push({ nombre: `Chipá ${seleccionPendiente.label} (${tipo})`, precio: seleccionPendiente.precio });
   actualizarContador();
   document.getElementById("modalTipo").classList.add("hidden");
-  seleccionPendiente = null;
 }
 
 function abrirModalMayorista() { document.getElementById("modalMayorista").classList.remove("hidden"); }
-function cerrarModalMayorista() { document.getElementById("modalMayorista").classList.add("hidden"); }
 
 function agregarMayorista(id, label, precio) {
-  const precioMayoristaFijo = 49500;
-  carrito.push({ nombre: `Mayorista ${label}`, precio: precioMayoristaFijo });
+  carrito.push({ nombre: `Mayorista ${label}`, precio: precio });
   actualizarContador();
-  cerrarModalMayorista();
+  document.getElementById("modalMayorista").classList.add("hidden");
 }
 
-// ── CARRITO (CON BOTÓN ELIMINAR) ──
-function actualizarContador() {
-  document.getElementById("contador").innerText = carrito.length;
-}
+// ── CARRITO (CON ELIMINAR) ──
+function actualizarContador() { document.getElementById("contador").innerText = carrito.length; }
 
 function abrirCarrito() {
-  if (carrito.length === 0) {
-    alert("Todavía no agregaste nada 🛒");
-    return;
-  }
-
   const lista = document.getElementById("listaCarrito");
   lista.innerHTML = "";
   let total = 0;
-
   carrito.forEach((p, i) => {
     total += p.precio;
     lista.innerHTML += `
-      <div class="flex justify-between items-center py-3 border-b border-gray-100/10">
-        <div class="flex flex-col">
-          <span class="font-bold text-sm text-white">${p.nombre}</span>
-          <span class="text-doradoClaro text-xs font-bold">${CONFIG.moneda}${p.precio.toLocaleString()}</span>
+      <div class="flex justify-between items-center py-3 border-b border-white/5">
+        <div>
+          <div class="text-white font-bold text-sm">${p.nombre}</div>
+          <div class="text-doradoClaro text-xs">$${p.precio.toLocaleString()}</div>
         </div>
-        <button onclick="eliminarItem(${i})" 
-          class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors">
-          <i class="fa-solid fa-trash-can text-xs"></i>
+        <button onclick="eliminarItem(${i})" class="w-8 h-8 rounded-full bg-red-500/10 text-red-500">
+          <i class="fa-solid fa-trash-can"></i>
         </button>
-      </div>
-    `;
+      </div>`;
   });
-
-  document.getElementById("totalCarrito").innerText = `${CONFIG.moneda}${total.toLocaleString()}`;
+  document.getElementById("totalCarrito").innerText = "$" + total.toLocaleString();
   document.getElementById("modalCarrito").classList.remove("hidden");
 }
 
 function eliminarItem(i) {
   carrito.splice(i, 1);
   actualizarContador();
-  if (carrito.length === 0) {
-    cerrarCarrito();
-  } else {
-    abrirCarrito(); // Recarga la lista para que desaparezca el item
-  }
+  if (carrito.length === 0) document.getElementById("modalCarrito").classList.add("hidden");
+  else abrirCarrito();
 }
 
-function cerrarCarrito() { document.getElementById("modalCarrito").classList.add("hidden"); }
-function cerrarCarritoYFormulario() { cerrarCarrito(); abrirFormulario(); }
-function abrirFormulario() { document.getElementById("modal").classList.remove("hidden"); }
-function cerrarFormulario() { document.getElementById("modal").classList.add("hidden"); }
+// ── FINALIZAR ──
+function cerrarCarritoYFormulario() {
+  document.getElementById("modalCarrito").classList.add("hidden");
+  document.getElementById("modal").classList.remove("hidden");
+}
 
-// ── ENVÍO ──
 function enviarPedido() {
-  const nombre = document.getElementById("nombre").value.trim();
-  const apellido = document.getElementById("apellido").value.trim();
-  const direccion = document.getElementById("direccion").value.trim();
-  const tipo = document.getElementById("tipo").value;
-  const pago = document.querySelector('input[name="pago"]:checked')?.value || "No especificado";
-
-  if (!nombre || !apellido) { alert("Completá al menos nombre y apellido"); return; }
-
-  let costoDelivery = 0;
-  let zonaNombre = "";
-  if (tipo === "Delivery") {
-    if (!direccion) { alert("Ingresá tu dirección"); return; }
-    const zonaSelect = document.getElementById("zona");
-    costoDelivery = parseInt(zonaSelect.value);
-    zonaNombre = zonaSelect.options[zonaSelect.selectedIndex].text;
-  }
-
-  let subtotal = 0;
-  carrito.forEach(p => subtotal += p.precio);
-  const total = subtotal + costoDelivery;
-
-  let mensaje = `🛵 *Nuevo Pedido*%0A━━━━━━━━━━━━━━━%0A👤 *Cliente:* ${nombre} ${apellido}%0A📦 *Tipo:* ${tipo}%0A`;
-  if (tipo === "Delivery") mensaje += `📍 *Dirección:* ${direccion}%0A🗺️ *Zona:* ${zonaNombre}%0A`;
-  mensaje += `💳 *Pago:* ${pago}%0A%0A🍽️ *Productos:*%0A`;
-  carrito.forEach(p => mensaje += `• ${p.nombre} — ${CONFIG.moneda}${p.precio.toLocaleString()}%0A`);
-  mensaje += `%0A━━━━━━━━━━━━━━━%0A🧾 *Subtotal:* ${CONFIG.moneda}${subtotal.toLocaleString()}%0A`;
-  if (tipo === "Delivery") mensaje += `🚗 *Delivery:* ${costoDelivery > 0 ? CONFIG.moneda + costoDelivery.toLocaleString() : 'Gratis'}%0A`;
-  mensaje += `💰 *Total: ${CONFIG.moneda}${total.toLocaleString()}*`;
-
-  window.open(`https://wa.me/${CONFIG.telefono}?text=${mensaje}`, "_blank");
-  carrito = [];
-  actualizarContador();
-  cerrarFormulario();
+  const n = document.getElementById("nombre").value;
+  const a = document.getElementById("apellido").value;
+  const d = document.getElementById("direccion").value;
+  const t = document.getElementById("tipo").value;
+  const p = document.querySelector('input[name="pago"]:checked').value;
+  
+  let sub = 0; carrito.forEach(x => sub += x.precio);
+  let mensaje = `*Don Chipá - Nuevo Pedido*%0A*Cliente:* ${n} ${a}%0A*Metodo:* ${t}%0A*Pago:* ${p}%0A`;
+  if(t==="Delivery") mensaje += `*Dirección:* ${d}%0A`;
+  mensaje += `%0A*Productos:*%0A`;
+  carrito.forEach(x => mensaje += `- ${x.nombre}%0A`);
+  mensaje += `%0A*Total: $${sub.toLocaleString()}*`;
+  
+  window.open(`https://wa.me/${CONFIG.telefono}?text=${mensaje}`);
 }
 
 function toggleDelivery() {
-  const tipo = document.getElementById("tipo").value;
-  const seccionDelivery = document.getElementById("seccionDelivery");
-  const seccionRetiro = document.getElementById("seccionRetiro");
-  if (tipo === "Delivery") {
-    seccionDelivery.classList.remove("hidden");
-    seccionRetiro.classList.add("hidden");
-  } else {
-    seccionDelivery.classList.add("hidden");
-    seccionRetiro.classList.remove("hidden");
-  }
+  const t = document.getElementById("tipo").value;
+  document.getElementById("seccionDelivery").classList.toggle("hidden", t !== "Delivery");
 }
