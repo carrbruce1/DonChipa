@@ -5,7 +5,7 @@ let seleccionPendiente = null;
 document.addEventListener("DOMContentLoaded", () => {
   renderCategorias();
   renderProductos();
-  renderZonas();
+  // renderZonas();
   renderPagos();
   document.getElementById("buscador").addEventListener("input", buscar);
 });
@@ -41,17 +41,17 @@ function filtrar(id) {
   renderProductos();
 }
 
-// ── ZONAS ──
-function renderZonas() {
-  const select = document.getElementById("zona");
-  select.innerHTML = "";
-  CONFIG.zonas.forEach(z => {
-    const label = z.costo === 0
-      ? `${z.nombre} — Envío gratis`
-      : `${z.nombre} — +${CONFIG.moneda}${z.costo.toLocaleString()}`;
-    select.innerHTML += `<option value="${z.costo}">${label}</option>`;
-  });
-}
+// // ── ZONAS ──
+// function renderZonas() {
+//   const select = document.getElementById("zona");
+//   select.innerHTML = "";
+//   CONFIG.zonas.forEach(z => {
+//     const label = z.costo === 0
+//       ? `${z.nombre} — Envío gratis`
+//       : `${z.nombre} — +${CONFIG.moneda}${z.costo.toLocaleString()}`;
+//     select.innerHTML += `<option value="${z.costo}">${label}</option>`;
+//   });
+// }
 
 // ── PAGOS ──
 function renderPagos() {

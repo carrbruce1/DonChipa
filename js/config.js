@@ -11,13 +11,13 @@ const CONFIG = {
     alias: "ALIAS_ACA"
   },
 
-  zonas: [
-    { nombre: "Centro",     costo: 0    },
-    { nombre: "Zona Norte", costo: 2000 },
-    { nombre: "Zona Sur",   costo: 2000 },
-    { nombre: "Zona Oeste", costo: 3000 },
-    { nombre: "Afueras",    costo: 5000 },
-  ],
+  // zonas: [
+  //   { nombre: "Centro",     costo: 0    },
+  //   { nombre: "Zona Norte", costo: 2000 },
+  //   { nombre: "Zona Sur",   costo: 2000 },
+  //   { nombre: "Zona Oeste", costo: 3000 },
+  //   { nombre: "Afueras",    costo: 5000 },
+  // ],
 
   // ────────────────
   // MINORISTA
