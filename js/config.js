@@ -19,8 +19,9 @@ const CONFIG = {
   // ─────────────────────────────────────────
   cupones: {
     "HUMBERTO10":   { descuento: 10, active: true  },
-    "INFLUENCER10": { descuento: 10, active: true  },
-    "PROMO5":       { descuento: 5,  active: true  },
+    "BOCAHIJO": {descuento: 50, active: true },
+    // "INFLUENCER10": { descuento: 10, active: true  },
+    // "PROMO5":       { descuento: 5,  active: true  },
     // "VERANO15":  { descuento: 15, active: false },  ← ejemplo desactivado
   },
 
