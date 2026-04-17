@@ -6,7 +6,6 @@
   <title>Don Chipá</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="shortcut icon" href="img/donChipa-removebg-preview.png" type="image/x-icon">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -17,231 +16,269 @@
         extend: {
           fontFamily: {
             playfair: ['Playfair Display', 'serif'],
-            nunito: ['Nunito', 'sans-serif'],
+            nunito:   ['Nunito', 'sans-serif'],
           },
           colors: {
-            verde: '#1a3d1a',
-            verdeClaro: '#2d5a2d',
-            dorado: '#c8860a',
+            verde:       '#1a3d1a',
+            verdeClaro:  '#2d5a2d',
+            dorado:      '#c8860a',
             doradoClaro: '#e8a020',
-            crema: '#f5f0e8',
+            crema:       '#f5f0e8',
           }
         }
       }
     }
   </script>
+
+  <style>
+    body { font-family: 'Nunito', sans-serif; }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { scrollbar-width: none; }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+    @keyframes popIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    .slide-up { animation: slideUp 0.3s ease; }
+    .pop-in   { animation: popIn  0.25s ease; }
+  </style>
 </head>
 
-<body class="bg-gradient-to-r from-[#0f1f0f] via-[#1a2e1a] to-[#0f1f0f] text-white font-nunito">
+<body class="bg-gradient-to-r from-[#0f1f0f] via-[#1a2e1a] to-[#0f1f0f] text-white font-nunito min-h-screen">
 
-  <div id="banner-promo" class="bg-dorado text-verde font-bold text-[10px] md:text-[11px] py-2 px-4 text-center uppercase tracking-[1px] shadow-md flex flex-col md:flex-row justify-center items-center gap-1">
+  <!-- Alerta de envios gratis -->
+
+  <!-- <div id="banner-promo"
+    class="bg-dorado text-verde font-bold text-[10px] py-2 px-4 text-center uppercase tracking-[1px] shadow-md flex flex-col md:flex-row justify-center items-center gap-1">
     <span id="texto-promo">🚚 ¡Envío Sin Cargo! Jueves, Viernes y Sábados</span>
     <span id="timer" class="bg-verde text-dorado px-2 py-0.5 rounded ml-2 font-mono text-xs">00:00:00</span>
-</div>
+  </div> -->
 
-  <div>
-
-    <section class="text-center pt-14 pb-10 px-6 bg-gradient-to-b from-[#0f1f0f] to-[#1a2e1a] flex flex-col items-center">
-
-      <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-dorado shadow-lg mb-5">
-       <a href="https://wa.me/5493454175555?text=Hola%20Don%20Chipá!%20Quería%20consultar%20por%20los%20precios%20y%20variedades%20disponibles.%20Gracias!" target="_blank"> <img src="img/donChipa-removebg-preview.png" class="w-full h-full object-cover"></a>
-      </div>
-
-      <h1 class="font-playfair text-4xl font-black text-doradoClaro">
-        Don Chipá
-      </h1>
-
-      <p class="text-sm text-dorado/60 mt-2 uppercase tracking-widest">
-        Sabor Tradicional del Litoral
-      </p>
-
-    </section>
-
-    <div class="px-5 -mt-3">
-      <div class="flex items-center gap-3 bg-[#0f1f0f] border border-dorado/20 rounded-full px-5 py-3 shadow-md">
-        <i class="fa fa-search text-dorado/40"></i>
-        <input id="buscador"
-          placeholder="Buscar productos..."
-          class="flex-1 bg-transparent outline-none text-white placeholder-dorado/30 text-sm">
-      </div>
+  <section class="text-center pt-14 pb-10 px-6 bg-gradient-to-b from-[#0f1f0f] to-[#1a2e1a] flex flex-col items-center">
+    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-dorado shadow-lg mb-5">
+      <a href="https://wa.me/5493454175555?text=Hola%20Don%20Chipá!" target="_blank">
+        <img src="img/donChipa-removebg-preview.png" class="w-full h-full object-cover">
+      </a>
     </div>
+    <h1 class="font-playfair text-4xl font-black text-doradoClaro">Don Chipá</h1>
+    <p class="text-sm text-dorado/60 mt-2 uppercase tracking-widest">Sabor Tradicional del Litoral</p>
+  </section>
 
-    <div id="categorias" class="flex gap-3 overflow-x-auto px-5 mt-5 pb-1"></div>
-
-    <div id="productos" class="px-5 mt-4 mb-28"></div>
-
-    <footer class="bg-[#0f1f0f] border-t border-dorado/20 px-6 py-10 mt-10">
-      <div class="flex flex-col items-center mb-6">
-        <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-dorado mb-3">
-          <img src="img/donChipa-removebg-preview.png" alt="Logo" class="w-full h-full object-cover">
-        </div>
-        <h2 class="font-playfair text-xl text-doradoClaro">Don Chipá</h2>
-        <p class="text-dorado/50 text-xs mt-1">Sabor Tradicional del Litoral</p>
-      </div>
-
-      <div class="flex justify-center gap-5 mb-6">
-        <a href="https://www.instagram.com/donchipamateo/" target="_blank" class="w-10 h-10 rounded-full bg-verdeClaro border border-dorado/20
-                           flex items-center justify-center text-dorado/60 hover:text-doradoClaro
-                           hover:border-dorado transition-colors">
-          <i class="fab fa-instagram text-lg"></i>
-        </a>
-        <a href="https://wa.me/5493454175555" target="_blank" class="w-10 h-10 rounded-full bg-verdeClaro border border-dorado/20
-                           flex items-center justify-center text-dorado/60 hover:text-doradoClaro
-                           hover:border-dorado transition-colors">
-          <i class="fab fa-whatsapp text-lg"></i>
-        </a>
-      </div>
-
-      <div class="border-t border-dorado/20 pt-5 text-center flex flex-col gap-1">
-        <p class="text-xs text-dorado/40">
-          © 2026 Don Chipá — Todos los derechos reservados
-        </p>
-        <p class="text-[10px] text-dorado/30 tracking-widest uppercase">
-          Developed by <span class="text-dorado/60 font-bold">BC Studio</span>
-        </p>
-      </div>
-    </footer>
-
-    <button onclick="abrirCarrito()" id="btnCarrito"
-      class="fixed bottom-6 right-4 bg-dorado text-white font-bold flex items-center gap-2 px-5 py-3 rounded-full shadow-lg active:scale-95 transition">
-      🛒
-      <span id="contador" class="bg-white text-dorado text-xs px-2 py-0.5 rounded-full">0</span>
-    </button>
-
-    <div id="modalCarrito" class="hidden fixed inset-0 bg-black/70 z-50 flex items-end justify-center">
-      <div class="bg-[#1a2e1a] w-full md:max-w-[520px] rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto transition-all duration-300">
-
-        <div class="flex justify-between mb-4">
-          <h2 class="font-playfair text-xl text-doradoClaro">Tu Pedido</h2>
-          <button onclick="cerrarCarrito()">✕</button>
-        </div>
-
-        <div id="listaCarrito"></div>
-
-        <div class="flex justify-between mt-4 font-bold text-lg">
-          <span>Total</span>
-          <span id="totalCarrito"></span>
-        </div>
-
-        <button onclick="cerrarCarritoYFormulario()"
-          class="mt-4 w-full bg-dorado py-3 rounded-xl">
-          Finalizar Pedido
-        </button>
-
-      </div>
+  <div class="px-5 -mt-3">
+    <div class="flex items-center gap-3 bg-[#0f1f0f] border border-dorado/20 rounded-full px-5 py-3 shadow-md">
+      <i class="fa fa-search text-dorado/40"></i>
+      <input id="buscador" placeholder="Buscar productos..."
+        class="flex-1 bg-transparent outline-none text-white placeholder-dorado/30 text-sm">
     </div>
-
-    <div id="modalMinorista" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
-      <div class="bg-crema text-black rounded-2xl p-6 w-full max-w-sm">
-
-        <h2 class="font-playfair text-xl mb-4">Elegí tu tamaño</h2>
-
-        <div id="opcionesMinorista" class="flex flex-col gap-3"></div>
-
-        <button onclick="cerrarModalMinorista()" class="mt-4 text-sm text-gray-500">Cerrar</button>
-
-      </div>
-    </div>
-
-    <div id="modalTipo" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
-      <div class="bg-crema text-black rounded-2xl p-6 w-full max-w-sm">
-
-        <h2 id="tipoTitulo" class="font-playfair text-xl mb-4"></h2>
-
-        <div class="flex flex-col gap-3">
-          <button onclick="confirmarTipo('Horneado')" class="bg-green-900 text-white py-3 rounded-xl"> Horneado</button>
-          <button onclick="confirmarTipo('Congelado')" class="bg-green-900 text-white py-3 rounded-xl"> Congelado</button>
-        </div>
-
-      </div>
-    </div>
-
-    <div id="modalMayorista" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
-      <div class="bg-crema text-black rounded-2xl p-6 w-full max-w-sm">
-
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="font-playfair text-xl">Mayorista</h2>
-          <button onclick="cerrarModalMayorista()" class="text-gray-500 w-8 h-8 rounded-full hover:bg-black/5">✕</button>
-        </div>
-
-        <div id="opcionesMayorista" class="flex flex-col gap-1"></div>
-
-        <button onclick="cerrarModalMayorista()" class="mt-4 w-full text-center text-sm text-gray-500 py-2">Cerrar</button>
-
-      </div>
-    </div>
-
-    <div id="modal" class="hidden fixed inset-0 bg-black/80 z-[300] flex items-center justify-center px-4">
-      <div class="pop-in bg-white text-black rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto">
-
-        <div class="flex justify-between items-center mb-5">
-          <h2 class="font-bebas text-xl tracking-wide">Datos del cliente</h2>
-          <button onclick="cerrarFormulario()"
-            class="bg-gray-100 text-gray-500 w-8 h-8 rounded-full flex items-center justify-center text-sm">
-            ✕
-          </button>
-        </div>
-
-        <div class="flex gap-2 mb-3">
-          <input id="nombre" placeholder="Nombre"
-            class="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-rojo">
-          <input id="apellido" placeholder="Apellido"
-            class="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-rojo">
-        </div>
-
-        <select id="tipo" onchange="toggleDelivery()"
-          class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
-          <option value="Delivery">🛵 Delivery</option>
-          <option value="Retiro">🏠 Retiro en local</option>
-        </select>
-
-        <div id="seccionDelivery">
-          <input id="direccion" placeholder="📍 Dirección"
-            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
-
-          <select id="zona"
-            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-rojo">
-          </select>
-        </div>
-
-        <div id="seccionRetiro" class="hidden mb-3">
-          <div class="bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-700">
-            📍 Retirás en: <strong>Blanco Escalada</strong>
-          </div>
-        </div>
-
-        <div class="border border-gray-200 rounded-xl px-4 py-3 mb-4">
-          <p class="text-xs text-gray-400 font-bold uppercase tracking-wide mb-2">Método de pago</p>
-          <div id="metodosPago" class="flex flex-col gap-2"></div>
-
-          <div id="aliasInfo" class="hidden mt-3 bg-gray-50 rounded-lg px-3 py-2 text-xs text-gray-600">
-            <span class="font-bold">Alias MP:</span>
-            <span id="aliasTexto"></span>
-          </div>
-        </div>
-
-        <button onclick="enviarPedido()"
-          class="w-full bg-[#25d366] text-white font-bebas text-xl tracking-wide
-                 py-3 rounded-xl flex items-center justify-center gap-2">
-          <i class="fab fa-whatsapp text-xl"></i>
-          Enviar por WhatsApp
-        </button>
-
-      </div>
-    </div>
-
   </div>
 
-  <script src="js/config.js"></script>
-  <script src="js/app.js"></script>
+  <div id="categorias" class="flex gap-3 overflow-x-auto hide-scrollbar px-5 mt-5 pb-1"></div>
+
+  <div id="productos" class="px-5 mt-4 mb-28"></div>
+
+  <footer class="bg-[#0f1f0f] border-t border-dorado/20 px-6 py-10 mt-10">
+    <div class="flex flex-col items-center mb-6">
+      <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-dorado mb-3">
+        <img src="img/donChipa-removebg-preview.png" alt="Logo" class="w-full h-full object-cover">
+      </div>
+      <h2 class="font-playfair text-xl text-doradoClaro">Don Chipá</h2>
+      <p class="text-dorado/50 text-xs mt-1">Sabor Tradicional del Litoral</p>
+    </div>
+
+    <div class="flex justify-center gap-5 mb-6">
+      <a href="https://www.instagram.com/donchipamateo/" target="_blank"
+        class="w-10 h-10 rounded-full bg-verdeClaro border border-dorado/20
+               flex items-center justify-center text-dorado/60 hover:text-doradoClaro hover:border-dorado transition-colors">
+        <i class="fab fa-instagram text-lg"></i>
+      </a>
+      <a href="https://wa.me/5493454175555" target="_blank"
+        class="w-10 h-10 rounded-full bg-verdeClaro border border-dorado/20
+               flex items-center justify-center text-dorado/60 hover:text-doradoClaro hover:border-dorado transition-colors">
+        <i class="fab fa-whatsapp text-lg"></i>
+      </a>
+    </div>
+
+    <div class="border-t border-dorado/20 pt-5 text-center flex flex-col gap-1">
+      <p class="text-xs text-dorado/40">© 2026 Don Chipá — Todos los derechos reservados</p>
+      <p class="text-[10px] text-dorado/30 tracking-widest uppercase">
+        Developed by <span class="text-dorado/60 font-bold">BC Studio</span>
+      </p>
+    </div>
+  </footer>
+
+  <button onclick="abrirCarrito()" id="btnCarrito"
+    class="fixed bottom-6 right-4 bg-dorado text-white font-bold flex items-center gap-2 px-5 py-3 rounded-full shadow-lg active:scale-95 transition z-50">
+    🛒
+    <span id="contador" class="bg-white text-dorado text-xs px-2 py-0.5 rounded-full">0</span>
+  </button>
+
+  <div id="modalCarrito" class="hidden fixed inset-0 bg-black/70 z-50 flex items-end justify-center">
+    <div class="slide-up bg-[#1a2e1a] w-full md:max-w-[520px] rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto">
+
+      <div class="flex justify-between mb-4">
+        <h2 class="font-playfair text-xl text-doradoClaro">Tu Pedido</h2>
+        <button onclick="cerrarCarrito()" class="text-white/60 hover:text-white">✕</button>
+      </div>
+
+      <div id="listaCarrito"></div>
+
+      <div class="flex justify-between mt-4 font-bold text-lg">
+        <span>Total</span>
+        <span id="totalCarrito" class="text-doradoClaro"></span>
+      </div>
+
+      <button onclick="cerrarCarritoYFormulario()"
+        class="mt-4 w-full bg-dorado py-3 rounded-xl font-bold text-white">
+        Finalizar Pedido
+      </button>
+
+    </div>
+  </div>
+
+  <div id="modalMinorista" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
+    <div class="pop-in bg-crema text-black rounded-2xl p-6 w-full max-w-sm">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="font-playfair text-xl">Elegí tu tamaño</h2>
+        <button onclick="cerrarModalMinorista()" class="text-gray-400 hover:text-gray-600">✕</button>
+      </div>
+      <div id="opcionesMinorista" class="flex flex-col gap-3"></div>
+    </div>
+  </div>
+
+  <div id="modalTipo" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
+    <div class="pop-in bg-crema text-black rounded-2xl p-6 w-full max-w-sm">
+      <div class="flex justify-between items-center mb-4">
+        <h2 id="tipoTitulo" class="font-playfair text-xl"></h2>
+        <button onclick="cerrarModalTipo()" class="text-gray-400 hover:text-gray-600">✕</button>
+      </div>
+      <p class="text-xs text-gray-500 mb-4">¿Cómo lo querés?</p>
+      <div class="flex flex-col gap-3">
+        <button onclick="confirmarTipo('Horneado')"
+          class="flex items-center gap-4 bg-[#1a2e1a] text-white px-5 py-4 rounded-xl hover:bg-verdeClaro transition-colors">
+          <div class="text-left">
+            <div class="font-black text-lg">Horneado</div>
+            <div class="text-xs text-white/50">Listo para comer</div>
+          </div>
+        </button>
+        <button onclick="confirmarTipo('Congelado')"
+          class="flex items-center gap-4 bg-[#1a2e1a] text-white px-5 py-4 rounded-xl hover:bg-verdeClaro transition-colors">
+          <div class="text-left">
+            <div class="font-black text-lg">Congelado</div>
+            <div class="text-xs text-white/50">Para hornear en casa</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalMayorista" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
+    <div class="pop-in bg-crema text-black rounded-2xl p-6 w-full max-w-sm">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="font-playfair text-xl">Mayorista</h2>
+        <button onclick="cerrarModalMayorista()" class="text-gray-400 hover:text-gray-600">✕</button>
+      </div>
+      <p class="text-xs text-gray-500 mb-4">Solo congelado · Mínimo 3 KG · $16.500 por kg</p>
+      <div id="opcionesMayorista" class="flex flex-col gap-3"></div>
+    </div>
+  </div>
+
+  <div id="modal" class="hidden fixed inset-0 bg-black/80 z-[300] flex items-center justify-center px-4">
+    <div class="pop-in bg-white text-black rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto">
+
+      <div class="flex justify-between items-center mb-5">
+        <h2 class="font-playfair text-xl font-black">Datos del cliente</h2>
+        <button onclick="cerrarFormulario()"
+          class="bg-gray-100 text-gray-500 w-8 h-8 rounded-full flex items-center justify-center text-sm">
+          ✕
+        </button>
+      </div>
+
+      <div class="flex gap-2 mb-3">
+        <input id="nombre" placeholder="Nombre"
+          class="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-dorado">
+        <input id="apellido" placeholder="Apellido"
+          class="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-dorado">
+      </div>
+
+      <select id="tipo" onchange="toggleDelivery()"
+        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-dorado">
+        <option value="Delivery">🛵 Delivery</option>
+        <option value="Retiro">🏠 Retiro en local</option>
+      </select>
+
+      <div id="seccionDelivery">
+        <input id="direccion" placeholder="📍 Dirección"
+          class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-dorado">
+        <select id="zona"
+          class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-dorado">
+        </select>
+      </div>
+
+      <div id="seccionRetiro" class="hidden mb-3">
+        <div class="bg-gray-100 rounded-xl px-4 py-3 text-sm text-gray-700">
+          📍 Retirás en: <strong>Blanco Escalada</strong>
+        </div>
+      </div>
+
+      <div class="border border-gray-200 rounded-xl px-4 py-3 mb-4">
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-wide mb-2">Método de pago</p>
+        <div id="metodosPago" class="flex flex-col gap-2"></div>
+        <div id="aliasInfo" class="hidden mt-3 bg-gray-50 rounded-lg px-3 py-2 text-xs text-gray-600">
+          <span class="font-bold">Alias MP:</span>
+          <span id="aliasTexto"></span>
+        </div>
+      </div>
+
+      <div class="border border-gray-200 rounded-xl px-4 py-3 mb-4">
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-wide mb-2">¿Tenés un cupón?</p>
+        <div class="flex gap-2">
+          <input id="cupon" placeholder="Código de descuento"
+            class="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-dorado uppercase">
+          <button onclick="aplicarCupon()"
+            class="bg-dorado text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-doradoClaro transition-colors">
+            Aplicar
+          </button>
+        </div>
+        <p id="mensajeCupon" class="text-xs mt-2 font-bold hidden"></p>
+        <div id="resumenDescuento" class="hidden mt-3 bg-gray-50 rounded-lg px-3 py-2 text-xs">
+          <div class="flex justify-between text-gray-500">
+            <span>Subtotal</span>
+            <span id="subtotalSinDesc"></span>
+          </div>
+          <div class="flex justify-between text-green-600 font-bold">
+            <span id="labelDescuento"></span>
+            <span id="montoDescuento"></span>
+          </div>
+          <div class="flex justify-between text-gray-800 font-black mt-1 border-t border-gray-200 pt-1">
+            <span>Total final</span>
+            <span id="totalConDesc"></span>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="enviarPedido()"
+        class="w-full bg-[#25d366] text-white font-bold text-lg
+               py-3 rounded-xl flex items-center justify-center gap-2">
+        <i class="fab fa-whatsapp text-xl"></i>
+        Enviar por WhatsApp
+      </button>
+
+    </div>
+  </div>
 
   <div id="toast"
-  class="fixed bottom-6 left-1/2 -translate-x-1/2
+    class="fixed bottom-6 left-1/2 -translate-x-1/2
            bg-[#0f1f0f] text-white px-5 py-3 rounded-xl
            border border-dorado/20 shadow-lg
            opacity-0 pointer-events-none
            transition-all duration-300 z-[999]">
   </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
 
 </body>
 </html>
