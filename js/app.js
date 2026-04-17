@@ -224,7 +224,7 @@ function cerrarModalMayorista() {
 }
 
 function agregarMayorista(id, label, precio) {
-  carrito.push({ nombre: `Mayorista ${label} ❄️ Congelado`, precio });
+  carrito.push({ nombre: `Mayorista ${label}  Congelado`, precio });
   actualizarContador();
   cerrarModalMayorista();
 }
