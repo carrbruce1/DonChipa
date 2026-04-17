@@ -211,7 +211,7 @@ function abrirModalMayorista() {
         class="flex items-center gap-4 bg-[#1a2e1a] text-white px-4 py-3 rounded-xl w-full border border-dorado/10 hover:bg-verdeClaro transition-colors mb-2">
         <img src="img/iconoChipa.jpeg" class="w-10 h-10 rounded-full object-cover border border-dorado/30">
         <div class="flex-1 text-left">
-          <div class="font-bold">${op.label} ❄️ Congelado</div>
+          <div class="font-bold">${op.label}  Congelado</div>
           <div class="text-xs text-doradoClaro font-bold">$${op.precio.toLocaleString()}</div>
         </div>
       </button>`;
