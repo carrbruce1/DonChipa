@@ -18,7 +18,7 @@ const CONFIG = {
   //  Para agregar uno nuevo, copiá una línea
   // ─────────────────────────────────────────
   cupones: {
-    "HUMBERTO10":   { descuento: 10, active: true  },
+    "MOREIRA TV":   { descuento: 10, active: true  },
     "BOCAHIJO": {descuento: 50, active: true },
     // "INFLUENCER10": { descuento: 10, active: true  },
     // "PROMO5":       { descuento: 5,  active: true  },
