@@ -63,7 +63,7 @@ const CONFIG = {
   productos: [
     {
     id: "Sandwich",
-    nombre: "Sanchipa",
+    nombre: " CHIPANWICH",
     descripcion: "Nuestro exclusivo sándwich de chipá. Preguntar precio.",
     precio: 8500,
     categoria:"Sandwich",
