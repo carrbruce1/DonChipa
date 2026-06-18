@@ -23,7 +23,6 @@ const CONFIG = {
     "BOCAHIJO": {descuento: 50, active: true },
     // "INFLUENCER10": { descuento: 10, active: true  },
     // "PROMO5":       { descuento: 5,  active: true  },
-    // "VERANO15":  { descuento: 15, active: false },  ← ejemplo desactivado
   },
 
   zonas: [
@@ -45,17 +44,32 @@ const CONFIG = {
   //  MAYORISTA
   // ────────────────
   mayoristaOpciones: [
-    { id: "3kg",  label: "3 KG",  precio: 49500  },
-    { id: "5kg",  label: "5 KG",  precio: 82500  },
-    { id: "10kg", label: "10 KG", precio: 165000 },
+    { id: "3kg",  label: "3 KG",  precio: 54000  },
+    { id: "6kg",  label: "6 KG",  precio: 105000  },
+    { id: "9kg", label: "9 KG", precio: 158000 },
+    { id: "12kg", label:"12 KG", precio: 210000},
+    { id: "15kg", label: "15 KG", precio:262500},
+    { id: "20kg", label: "20 KG", precio: 340000},
+    { id: "21kg", label: "21 KG o Más", precio: 17000 + " por cada kilo extra"}
   ],
 
   categorias: [
     { id: "Minorista", nombre: "Minorista", emoji: "🛍️" },
     { id: "Mayorista", nombre: "Mayorista", emoji: "📦"  },
+    {id: "Sandwich", nombre: "Sandwich", emoji: "🌟"},
   ],
 
+
   productos: [
+    {
+    id: "Sandwich",
+    nombre: "Sanchipa",
+    descripcion: "Nuestro exclusivo sándwich de chipá. Preguntar precio.",
+    precio: 8500,
+    categoria:"Sandwich",
+    estrella: true,
+    imagen: "img/chisan.jpeg",
+  },
     {
       nombre:      "Chipá",
       descripcion: "Sabor tradicional del litoral. Disponible horneado o congelado.",

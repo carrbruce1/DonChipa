@@ -108,9 +108,36 @@ function renderProductos(lista = CONFIG.productos) {
     filtrados = lista.filter(p => p.categoria === categoriaActiva);
   }
 
+  // ── Chiwanchi estrella (siempre primero si está en los filtrados) ──
+  const estrella = filtrados.find(p => p.estrella);
+  if (estrella) {
+    const divEstrella = document.createElement("div");
+    divEstrella.className = "mt-4";
+    divEstrella.innerHTML = `
+      <div class="bg-[#1a2e1a] border border-dorado/40 rounded-2xl overflow-hidden shadow-lg w-56">
+        <img src="${estrella.imagen}" alt="${estrella.nombre}" class="w-full h-44 object-cover">
+        <div class="p-4 relative">
+          <span class="absolute -top-3 right-3 bg-dorado text-white text-xs font-bold px-2 py-0.5 rounded-full">
+            ⭐ ESTRELLA
+          </span>
+          <h3 class="font-playfair text-lg text-doradoClaro font-black mb-1">${estrella.nombre}</h3>
+          <p class="text-xs text-white/60 line-clamp-3 mb-8">${estrella.descripcion}</p>
+          <button
+            onclick="window.open('https://wa.me/${CONFIG.telefono}?text=Hola!%20Quiero%20pedir%20un%20${encodeURIComponent(estrella.nombre)}')"
+            class="absolute bottom-3 right-3 bg-dorado hover:bg-doradoClaro text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold transition shadow-md">
+            +
+          </button>
+        </div>
+      </div>`;
+    cont.appendChild(divEstrella);
+  }
+
+  // ── Resto de productos agrupados por categoría ──
   const grupos = {};
   CONFIG.categorias.forEach(c => grupos[c.id] = []);
-  filtrados.forEach(p => { if (grupos[p.categoria]) grupos[p.categoria].push(p); });
+  filtrados
+    .filter(p => !p.estrella)
+    .forEach(p => { if (grupos[p.categoria]) grupos[p.categoria].push(p); });
 
   Object.entries(grupos).forEach(([catId, productos]) => {
     if (productos.length === 0) return;
@@ -125,7 +152,7 @@ function renderProductos(lista = CONFIG.productos) {
             ? `abrirModalMinorista()`
             : `abrirModalMayorista()`;
           const rutaImagen = p.categoria === "Minorista"
-            ? "img/chipa.jpeg"
+            ? "img/chipa2.jpeg"
             : "img/congelados.jpeg";
           return `
             <div class="flex-shrink-0 w-52 bg-[#0f1f0f] rounded-2xl overflow-hidden border border-dorado/20 shadow-lg flex flex-col">
