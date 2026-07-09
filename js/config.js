@@ -65,7 +65,7 @@ const CONFIG = {
     id: "Sandwich",
     nombre: " CHIPANWICH",
     descripcion: "Nuestro exclusivo sándwich de chipá. Preguntar precio.",
-    precio: 8500,
+    precio: 3500,
     categoria:"Sandwich",
     estrella: true,
     imagen: "img/chisan.jpeg",
