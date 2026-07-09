@@ -49,14 +49,6 @@
 
 <body class="bg-gradient-to-r from-[#0f1f0f] via-[#1a2e1a] to-[#0f1f0f] text-white font-nunito min-h-screen">
 
-  <!-- Alerta de envios gratis -->
-
-  <!-- <div id="banner-promo"
-    class="bg-dorado text-verde font-bold text-[10px] py-2 px-4 text-center uppercase tracking-[1px] shadow-md flex flex-col md:flex-row justify-center items-center gap-1">
-    <span id="texto-promo">🚚 ¡Envío Sin Cargo! Jueves, Viernes y Sábados</span>
-    <span id="timer" class="bg-verde text-dorado px-2 py-0.5 rounded ml-2 font-mono text-xs">00:00:00</span>
-  </div> -->
-
   <section class="text-center pt-14 pb-10 px-6 bg-gradient-to-b from-[#0f1f0f] to-[#1a2e1a] flex flex-col items-center">
     <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-dorado shadow-lg mb-5">
       <a href="https://wa.me/5493454175555?text=Hola%20Don%20Chipá!" target="_blank">
@@ -67,8 +59,6 @@
     <p class="text-sm text-dorado/60 mt-2 uppercase tracking-widest">Sabor Tradicional del Litoral</p>
   </section>
 
-  
-
   <div class="px-5 -mt-3">
     <div class="flex items-center gap-3 bg-[#0f1f0f] border border-dorado/20 rounded-full px-5 py-3 shadow-md">
       <i class="fa fa-search text-dorado/40"></i>
@@ -78,7 +68,6 @@
   </div>
 
   <div id="categorias" class="flex gap-3 overflow-x-auto hide-scrollbar px-5 mt-5 pb-1"></div>
-
 
   <div id="productos" class="px-5 mt-4 mb-28"></div>
 
@@ -105,7 +94,7 @@
     </div>
 
     <div class="border-t border-dorado/20 pt-5 text-center flex flex-col gap-1">
-      <p class="text-xs text-dorado/40">© 2026 Don Chipá — Todos los derechos reservados</p>
+      <p class="text-xs text-dorado/40">©️ 2026 Don Chipá — Todos los derechos reservados</p>
       <p class="text-[10px] text-dorado/30 tracking-widest uppercase">
         Developed by <span class="text-dorado/60 font-bold">BC Studio</span>
       </p>
@@ -120,31 +109,21 @@
 
   <div id="modalCarrito" class="hidden fixed inset-0 bg-black/70 z-50 flex items-end justify-center">
     <div class="slide-up bg-[#1a2e1a] w-full md:max-w-[520px] rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto">
-
       <div class="flex justify-between mb-4">
         <h2 class="font-playfair text-xl text-doradoClaro">Tu Pedido</h2>
         <button onclick="cerrarCarrito()" class="text-white/60 hover:text-white">✕</button>
       </div>
-
       <div id="listaCarrito"></div>
-
       <div class="flex justify-between mt-4 font-bold text-lg">
         <span>Total</span>
         <span id="totalCarrito" class="text-doradoClaro"></span>
       </div>
-
       <button onclick="cerrarCarritoYFormulario()"
         class="mt-4 w-full bg-dorado py-3 rounded-xl font-bold text-white">
         Finalizar Pedido
       </button>
-
     </div>
   </div>
-
-  </section>
-
-
-<div class="px-5 -mt-3">
 
   <div id="modalMinorista" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
     <div class="pop-in bg-crema text-black rounded-2xl p-6 w-full max-w-sm">

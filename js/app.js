@@ -108,7 +108,7 @@ function renderProductos(lista = CONFIG.productos) {
     filtrados = lista.filter(p => p.categoria === categoriaActiva);
   }
 
-  // ── Chiwanchi estrella (Modificado para agregar directo al carrito) ──
+ // ── Chiwanchi estrella (Modificado para mostrar el precio) ──
   const estrella = filtrados.find(p => p.estrella);
   if (estrella) {
     const divEstrella = document.createElement("div");
@@ -122,16 +122,20 @@ function renderProductos(lista = CONFIG.productos) {
           </span>
           <h3 class="font-playfair text-lg text-doradoClaro font-black mb-1">${estrella.nombre}</h3>
           <p class="text-xs text-white/60 line-clamp-3 mb-8">${estrella.descripcion}</p>
-          <button
-            onclick="agregarProductoDirecto('${estrella.nombre}', ${estrella.precio})"
-            class="absolute bottom-3 right-3 bg-dorado hover:bg-doradoClaro text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold transition shadow-md">
-            <i class="fa-solid fa-plus"></i>
-          </button>
+          
+          <div class="flex justify-between items-center absolute bottom-3 left-4 right-3">
+            <span class="text-doradoClaro font-bold text-sm">$${estrella.precio.toLocaleString()}</span>
+            <button
+              onclick="agregarProductoDirecto('${estrella.nombre}', ${estrella.precio})"
+              class="bg-dorado hover:bg-doradoClaro text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold transition shadow-md active:scale-90">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
         </div>
       </div>`;
     cont.appendChild(divEstrella);
   }
-
+  
   // ── Resto de productos agrupados por categoría ──
   const grupos = {};
   CONFIG.categorias.forEach(c => grupos[c.id] = []);
