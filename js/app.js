@@ -108,7 +108,7 @@ function renderProductos(lista = CONFIG.productos) {
     filtrados = lista.filter(p => p.categoria === categoriaActiva);
   }
 
-  // ── Chiwanchi estrella (siempre primero si está en los filtrados) ──
+  // ── Chiwanchi estrella (Modificado para agregar directo al carrito) ──
   const estrella = filtrados.find(p => p.estrella);
   if (estrella) {
     const divEstrella = document.createElement("div");
@@ -123,9 +123,9 @@ function renderProductos(lista = CONFIG.productos) {
           <h3 class="font-playfair text-lg text-doradoClaro font-black mb-1">${estrella.nombre}</h3>
           <p class="text-xs text-white/60 line-clamp-3 mb-8">${estrella.descripcion}</p>
           <button
-            onclick="window.open('https://wa.me/${CONFIG.telefono}?text=Hola!%20Quiero%20pedir%20un%20${encodeURIComponent(estrella.nombre)}')"
+            onclick="agregarProductoDirecto('${estrella.nombre}', ${estrella.precio})"
             class="absolute bottom-3 right-3 bg-dorado hover:bg-doradoClaro text-white w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold transition shadow-md">
-            +
+            <i class="fa-solid fa-plus"></i>
           </button>
         </div>
       </div>`;
@@ -148,12 +148,22 @@ function renderProductos(lista = CONFIG.productos) {
       <h2 class="font-playfair text-2xl text-doradoClaro mb-4">${catId}</h2>
       <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-4">
         ${productos.map(p => {
-          const accion = p.categoria === "Minorista"
-            ? `abrirModalMinorista()`
-            : `abrirModalMayorista()`;
-          const rutaImagen = p.categoria === "Minorista"
-            ? "img/chipa2.jpeg"
-            : "img/congelados.jpeg";
+          let accion = "";
+          let rutaImagen = "";
+
+          // Validación de flujos por categoría
+          if (p.categoria === "Minorista") {
+            accion = "abrirModalMinorista()";
+            rutaImagen = "img/chipa2.jpeg";
+          } else if (p.categoria === "Mayorista") {
+            accion = "abrirModalMayorista()";
+            rutaImagen = "img/congelados.jpeg";
+          } else {
+            // Para sándwiches u otros productos sin lógica mayorista/minorista
+            accion = `agregarProductoDirecto('${p.nombre}', ${p.precio})`;
+            rutaImagen = p.imagen || "img/chisan.jpeg";
+          }
+
           return `
             <div class="flex-shrink-0 w-52 bg-[#0f1f0f] rounded-2xl overflow-hidden border border-dorado/20 shadow-lg flex flex-col">
               <div class="w-full h-32 overflow-hidden">
@@ -162,7 +172,8 @@ function renderProductos(lista = CONFIG.productos) {
               <div class="p-4 flex flex-col flex-1">
                 <div class="font-extrabold text-sm mb-1 text-white">${p.nombre}</div>
                 <div class="text-xs text-dorado/50 mb-3 flex-1">${p.descripcion}</div>
-                <div class="flex justify-end mt-auto">
+                <div class="flex justify-between items-center mt-auto">
+                  <span class="text-doradoClaro font-bold text-sm">$${p.precio.toLocaleString()}</span>
                   <button onclick="${accion}"
                     class="w-10 h-10 rounded-full bg-dorado text-white shadow-md active:scale-90 transition">
                     <i class="fa-solid fa-plus"></i>
@@ -216,17 +227,6 @@ function cerrarModalTipo() {
   seleccionPendiente = null;
 }
 
-function confirmarTipo(tipo) {
-  if (!seleccionPendiente) return;
-  carrito.push({
-    nombre: `Chipá ${seleccionPendiente.label} ${tipo}`,
-    precio: seleccionPendiente.precio
-  });
-  actualizarContador();
-  document.getElementById("modalTipo").classList.add("hidden");
-  seleccionPendiente = null;
-}
-
 // ── MODAL MAYORISTA ──
 function abrirModalMayorista() {
   const cont = document.getElementById("opcionesMayorista");
@@ -250,10 +250,30 @@ function cerrarModalMayorista() {
   document.getElementById("modalMayorista").classList.add("hidden");
 }
 
+function confirmarTipo(tipo) {
+  if (!seleccionPendiente) return;
+  carrito.push({
+    nombre: `Chipá ${seleccionPendiente.label} ${tipo}`,
+    precio: seleccionPendiente.precio
+  });
+  actualizarContador();
+  document.getElementById("modalTipo").classList.add("hidden");
+  seleccionPendiente = null;
+}
+
 function agregarMayorista(id, label, precio) {
   carrito.push({ nombre: `Mayorista ${label}  Congelado`, precio });
   actualizarContador();
   cerrarModalMayorista();
+}
+
+// ── AGREGAR DIRECTO AL CARRITO (Para productos sin variantes) ──
+function agregarProductoDirecto(nombre, precio) {
+  carrito.push({
+    nombre: nombre.trim(),
+    precio: precio
+  });
+  actualizarContador();
 }
 
 // ── CARRITO ──
