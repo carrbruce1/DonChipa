@@ -19,7 +19,7 @@
             nunito:   ['Nunito', 'sans-serif'],
           },
           colors: {
-            verde:       '#0F210E',
+            verde:       '#658D35',
             verdeClaro:  '#658D35',
             dorado:      '#E5A823',
             doradoClaro: '#F2C94C',
@@ -38,8 +38,32 @@
     display: none; 
   }
   .hide-scrollbar { 
-    -ms-overflow-style: none;  /* IE y Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* 1. Limpiar marcos externos desalineados en contenedores */
+  #productos, #productos > div, .overflow-x-auto {
+    border: none !important;
+    outline: none !important;
+  }
+
+  /* 2. Borde amarillo centrado y perfecto ÚNICAMENTE en las tarjetas */
+  #productos article, 
+  #productos .product-card,
+  .product-card {
+    border: 2px solid #E5A823 !important;
+    border-radius: 1.25rem !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 3. Botones de categoría con borde y fondo amarillo */
+  #categorias button {
+    border: 1.5px solid #E5A823 !important;
+    background-color: #E5A823 !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
   }
 
   @keyframes slideUp {
@@ -55,57 +79,55 @@
 </style>
 </head>
 
-<body class="bg-gradient-to-b from-[#0F210E] via-[#142A13] to-[#0F210E] text-white font-nunito min-h-screen">
+<body class="bg-white text-verde font-nunito min-h-screen">
 
   <!-- Header -->
-  <section class="text-center pt-14 pb-10 px-6 bg-gradient-to-b from-[#0F210E] to-[#142A13] flex flex-col items-center">
-    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-dorado shadow-lg mb-5">
-      <a href="https://wa.me/5493454175555?text=Hola%20Pachipá!" target="_blank">
-        <img src="img/pachipa-logo.png" alt="Logo Pachipá" class="w-full h-full object-cover">
-      </a>
-    </div>
-    <h1 class="font-playfair text-4xl font-black text-dorado">Pachipá</h1>
-    <p class="text-sm text-crema/80 mt-2 uppercase tracking-widest font-semibold">Sabor Tradicional del Litoral</p>
+  <section class="text-center pt-14 pb-10 px-6 bg-white flex flex-col items-center border-b border-dorado/30">
+    <a href="https://wa.me/5493454175555?text=Hola%20Pachipá!" target="_blank" class="mb-5 block">
+      <img src="img/pachipa-logo.png" alt="Logo Pachipá" class="w-32 h-32 object-contain">
+    </a>
+    <h1 class="font-playfair text-4xl font-black text-verde">Pachipá</h1>
+    <p class="text-sm text-verde mt-2 uppercase tracking-widest font-semibold">Sabor Tradicional del Litoral</p>
   </section>
 
   <!-- Buscador -->
   <div class="px-5 -mt-3">
-    <div class="flex items-center gap-3 bg-[#081207] border border-verdeClaro/40 rounded-full px-5 py-3 shadow-md">
-      <i class="fa fa-search text-dorado/70"></i>
+    <div class="flex items-center gap-3 bg-white border-2 border-dorado rounded-full px-5 py-3 shadow-md">
+      <i class="fa fa-search text-dorado"></i>
       <input id="buscador" placeholder="Buscar productos..."
-        class="flex-1 bg-transparent outline-none text-white placeholder-crema/40 text-sm">
+        class="flex-1 bg-transparent outline-none text-verde placeholder-verde/60 text-sm font-semibold">
     </div>
   </div>
 
   <!-- Categorías y Productos -->
   <div id="categorias" class="flex gap-3 overflow-x-auto hide-scrollbar px-5 mt-5 pb-1"></div>
-  <div id="productos" class="px-5 mt-4 mb-28"></div>
+  <div id="productos" class="px-5 mt-4 mb-28 text-verde"></div>
 
   <!-- Footer -->
-  <footer class="bg-[#081207] border-t border-dorado/20 px-6 py-10 mt-10">
+  <footer class="bg-white border-t border-dorado/30 px-6 py-10 mt-10">
     <div class="flex flex-col items-center mb-6">
-      <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-dorado mb-3">
-        <img src="img/pachipa-logo.png" alt="Logo" class="w-full h-full object-cover">
+      <div class="mb-3">
+        <img src="img/pachipa-logo.png" alt="Logo" class="w-14 h-14 object-contain">
       </div>
-      <h2 class="font-playfair text-xl text-dorado font-bold">Pachipá</h2>
-      <p class="text-crema/60 text-xs mt-1">Sabor Tradicional del Litoral</p>
+      <h2 class="font-playfair text-xl text-verde font-bold">Pachipá</h2>
+      <p class="text-verde text-xs mt-1 font-semibold">Sabor Tradicional del Litoral</p>
     </div>
 
     <div class="flex justify-center gap-5 mb-6">
       <a href="https://www.instagram.com/donchipamateo/" target="_blank"
-        class="w-10 h-10 rounded-full bg-verdeClaro border border-dorado/30 flex items-center justify-center text-white hover:text-dorado transition-colors">
+        class="w-10 h-10 rounded-full bg-dorado flex items-center justify-center text-black font-bold hover:bg-doradoClaro transition-colors shadow-sm">
         <i class="fab fa-instagram text-lg"></i>
       </a>
       <a href="https://wa.me/5493454175555" target="_blank"
-        class="w-10 h-10 rounded-full bg-verdeClaro border border-dorado/30 flex items-center justify-center text-white hover:text-dorado transition-colors">
+        class="w-10 h-10 rounded-full bg-dorado flex items-center justify-center text-black font-bold hover:bg-doradoClaro transition-colors shadow-sm">
         <i class="fab fa-whatsapp text-lg"></i>
       </a>
     </div>
 
-    <div class="border-t border-dorado/20 pt-5 text-center flex flex-col gap-1">
-      <p class="text-xs text-crema/40">©️ 2026 Pachipá — Todos los derechos reservados</p>
-      <p class="text-[10px] text-crema/30 tracking-widest uppercase">
-        Developed by <span class="text-dorado font-bold">BC Studio</span>
+    <div class="border-t border-dorado/30 pt-5 text-center flex flex-col gap-1">
+      <p class="text-xs text-verde font-medium">©️ 2026 Pachipá — Todos los derechos reservados</p>
+      <p class="text-[10px] text-verde tracking-widest uppercase">
+        Developed by <span class="text-verde font-black">BC Studio</span>
       </p>
     </div>
   </footer>
@@ -119,18 +141,18 @@
 
   <!-- Modal Carrito -->
   <div id="modalCarrito" class="hidden fixed inset-0 bg-black/70 z-50 flex items-end justify-center">
-    <div class="slide-up bg-[#142A13] w-full md:max-w-[520px] rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto border-t border-dorado/30">
+    <div class="slide-up bg-white w-full md:max-w-[520px] rounded-t-3xl p-6 max-h-[80vh] overflow-y-auto border-t-4 border-dorado text-verde">
       <div class="flex justify-between mb-4">
-        <h2 class="font-playfair text-xl text-dorado font-bold">Tu Pedido</h2>
-        <button onclick="cerrarCarrito()" class="text-white/60 hover:text-white">✕</button>
+        <h2 class="font-playfair text-xl text-verde font-bold">Tu Pedido</h2>
+        <button onclick="cerrarCarrito()" class="text-verde font-bold">✕</button>
       </div>
       <div id="listaCarrito"></div>
       <div class="flex justify-between mt-4 font-bold text-lg">
         <span>Total</span>
-        <span id="totalCarrito" class="text-dorado"></span>
+        <span id="totalCarrito" class="text-verde font-black"></span>
       </div>
       <button onclick="cerrarCarritoYFormulario()"
-        class="mt-4 w-full bg-dorado py-3 rounded-xl font-black text-black">
+        class="mt-4 w-full bg-dorado py-3 rounded-xl font-black text-black hover:bg-doradoClaro transition-colors">
         Finalizar Pedido
       </button>
     </div>
@@ -138,31 +160,31 @@
 
   <!-- Modal Unificado de Variantes -->
   <div id="modalVariantes" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
-    <div class="pop-in bg-crema text-black rounded-2xl p-6 w-full max-w-sm max-h-[85vh] overflow-y-auto">
+    <div class="pop-in bg-white text-verde rounded-2xl p-6 w-full max-w-sm max-h-[85vh] overflow-y-auto border-2 border-dorado">
       <div class="flex justify-between items-center mb-4">
-        <h2 id="variantesTitulo" class="font-playfair text-xl font-bold"></h2>
-        <button onclick="cerrarModalVariantes()" class="text-gray-600 hover:text-black">✕</button>
+        <h2 id="variantesTitulo" class="font-playfair text-xl font-bold text-verde"></h2>
+        <button onclick="cerrarModalVariantes()" class="text-verde font-bold">✕</button>
       </div>
 
-      <p class="text-xs text-gray-700 mb-3 font-semibold">Elegí una opción:</p>
+      <p class="text-xs text-verde mb-3 font-semibold">Elegí una opción:</p>
       <div id="opcionesVariantes" class="flex flex-col gap-3"></div>
 
       <!-- Control de cantidad -->
-      <div id="cantidadVarianteSeccion" class="hidden mt-5 border-t border-gray-300 pt-4">
-        <p class="text-xs text-gray-500 font-bold uppercase tracking-wide mb-2">Cantidad</p>
-        <div class="flex items-center justify-between bg-[#142A13] rounded-xl px-4 py-3">
+      <div id="cantidadVarianteSeccion" class="hidden mt-5 border-t border-gray-200 pt-4">
+        <p class="text-xs text-verde font-bold uppercase tracking-wide mb-2">Cantidad</p>
+        <div class="flex items-center justify-between bg-gray-100 rounded-xl px-4 py-3">
           <button onclick="cambiarCantidadModal(-1)"
             class="w-9 h-9 rounded-full bg-dorado text-black font-black text-lg active:scale-90 transition">−</button>
-          <span id="cantidadVarianteTexto" class="text-white font-bold text-lg">1</span>
+          <span id="cantidadVarianteTexto" class="text-verde font-bold text-lg">1</span>
           <button onclick="cambiarCantidadModal(1)"
             class="w-9 h-9 rounded-full bg-dorado text-black font-black text-lg active:scale-90 transition">+</button>
         </div>
-        <div class="flex justify-between mt-3 text-sm font-bold text-gray-700">
+        <div class="flex justify-between mt-3 text-sm font-bold text-verde">
           <span>Total</span>
-          <span id="totalVariante" class="text-verdeClaro"></span>
+          <span id="totalVariante" class="text-verde font-black"></span>
         </div>
         <button onclick="confirmarVariante()"
-          class="mt-4 w-full bg-dorado py-3 rounded-xl font-black text-black">
+          class="mt-4 w-full bg-dorado py-3 rounded-xl font-black text-black hover:bg-doradoClaro transition-colors">
           Agregar al carrito
         </button>
       </div>
@@ -171,34 +193,34 @@
 
   <!-- Modal Checkout -->
   <div id="modal" class="hidden fixed inset-0 bg-black/80 z-[300] flex items-center justify-center px-4">
-    <div class="pop-in bg-white text-black rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto">
+    <div class="pop-in bg-white text-black rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto border-2 border-dorado">
 
       <div class="flex justify-between items-center mb-5">
-        <h2 class="font-playfair text-xl font-black">Datos del cliente</h2>
+        <h2 class="font-playfair text-xl font-black text-verde">Datos del cliente</h2>
         <button onclick="cerrarFormulario()"
-          class="bg-gray-100 text-gray-500 w-8 h-8 rounded-full flex items-center justify-center text-sm">
+          class="bg-gray-100 text-gray-500 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
           ✕
         </button>
       </div>
 
       <div class="flex gap-2 mb-3">
         <input id="nombre" placeholder="Nombre"
-          class="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-dorado">
+          class="w-1/2 border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-dorado">
         <input id="apellido" placeholder="Apellido"
-          class="w-1/2 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-dorado">
+          class="w-1/2 border border-gray-300 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-dorado">
       </div>
 
       <select id="tipo" onchange="toggleDelivery()"
-        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-dorado">
+        class="w-full border border-gray-300 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-dorado">
         <option value="Delivery">🛵 Delivery</option>
         <option value="Retiro">🏠 Retiro en local</option>
       </select>
 
       <div id="seccionDelivery">
         <input id="direccion" placeholder="📍 Dirección"
-          class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-dorado">
+          class="w-full border border-gray-300 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-dorado">
         <select id="zona"
-          class="w-full border border-gray-200 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-dorado">
+          class="w-full border border-gray-300 rounded-xl px-4 py-2.5 mb-3 text-sm outline-none focus:border-dorado">
         </select>
       </div>
 
@@ -209,7 +231,7 @@
       </div>
 
       <div class="border border-gray-200 rounded-xl px-4 py-3 mb-4">
-        <p class="text-xs text-gray-400 font-bold uppercase tracking-wide mb-2">Método de pago</p>
+        <p class="text-xs text-gray-500 font-bold uppercase tracking-wide mb-2">Método de pago</p>
         <div id="metodosPago" class="flex flex-col gap-2"></div>
         <div id="aliasInfo" class="hidden mt-3 bg-gray-50 rounded-lg px-3 py-2 text-xs text-gray-600">
           <span class="font-bold">Alias MP:</span>
@@ -218,10 +240,10 @@
       </div>
 
       <div class="border border-gray-200 rounded-xl px-4 py-3 mb-4">
-        <p class="text-xs text-gray-400 font-bold uppercase tracking-wide mb-2">¿Tenés un cupón?</p>
+        <p class="text-xs text-gray-500 font-bold uppercase tracking-wide mb-2">¿Tenés un cupón?</p>
         <div class="flex gap-2">
           <input id="cupon" placeholder="Código de descuento"
-            class="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-dorado uppercase">
+            class="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-sm outline-none focus:border-dorado uppercase">
           <button onclick="aplicarCupon()"
             class="bg-dorado text-black px-4 py-2 rounded-xl text-sm font-bold hover:bg-doradoClaro transition-colors">
             Aplicar
@@ -233,7 +255,7 @@
             <span>Subtotal</span>
             <span id="subtotalSinDesc"></span>
           </div>
-          <div class="flex justify-between text-verdeClaro font-bold">
+          <div class="flex justify-between text-verde font-bold">
             <span id="labelDescuento"></span>
             <span id="montoDescuento"></span>
           </div>
@@ -245,7 +267,7 @@
       </div>
 
       <button onclick="enviarPedido()"
-        class="w-full bg-[#25d366] text-white font-bold text-lg py-3 rounded-xl flex items-center justify-center gap-2">
+        class="w-full bg-[#25d366] text-white font-bold text-lg py-3 rounded-xl flex items-center justify-center gap-2 shadow-md">
         <i class="fab fa-whatsapp text-xl"></i>
         Enviar por WhatsApp
       </button>
