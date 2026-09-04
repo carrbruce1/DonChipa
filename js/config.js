@@ -6,7 +6,7 @@ const CONFIG = {
   pagos: {
     efectivo: true,
     transferencia: true,
-    alias: "Donmateochipa"
+    alias: "pachipas"
   },
 
   cupones: {
