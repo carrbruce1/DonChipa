@@ -131,26 +131,26 @@ const CONFIG = {
 
     // ── SECCIÓN: MAYORISTA ──
     {
-  id: "caja-mayorista-crudo",
-  nombre: "Caja Chipá Congelado",
-  descripcion: "Cajas por mayor listos para hornear en locales o eventos.",
-  categoria: "Mayorista",
-  imagen: "img/congelados.jpeg",
-  isNew: false,
-  variantes: [
-    { id: "caja-3kg",  label: "3 KG Congelado",  precio: 54000 },
-    { id: "caja-6kg",  label: "6 KG Congelado",  precio: 105000 },
-    { id: "caja-9kg",  label: "9 KG Congelado",  precio: 158000 },
-    { id: "caja-12kg", label: "12 KG Congelado", precio: 210000 },
-    { id: "caja-15kg", label: "15 KG Congelado", precio: 262500 },
-    { id: "caja-20kg", label: "20 KG Congelado", precio: 340000 },
-    { 
-      id: "caja-21kg", 
-      label: "21 KG o Más Congelado", 
-      sublabel: "$17000 por cada kilo extra", 
-      precio: 17000 
+      id: "caja-mayorista-crudo",
+      nombre: "Caja Chipá Congelado",
+      descripcion: "Cajas por mayor listos para hornear en locales o eventos.",
+      categoria: "Mayorista",
+      imagen: "img/congelados.jpeg",
+      isNew: false,
+      variantes: [
+        { id: "caja-3kg",  label: "3 KG Congelado",  precio: 54000 },
+        { id: "caja-6kg",  label: "6 KG Congelado",  precio: 105000 },
+        { id: "caja-9kg",  label: "9 KG Congelado",  precio: 158000 },
+        { id: "caja-12kg", label: "12 KG Congelado", precio: 210000 },
+        { id: "caja-15kg", label: "15 KG Congelado", precio: 262500 },
+        { id: "caja-20kg", label: "20 KG Congelado", precio: 340000 },
+        { 
+          id: "caja-21kg", 
+          label: "21 KG o Más Congelado", 
+          sublabel: "$17000 por cada kilo extra", 
+          precio: 17000 
+        }
+      ]
     }
-  ]
-}
   ]
 };

@@ -40,69 +40,6 @@ function filtrar(id) {
   renderProductos();
 }
 
-// ── RENDER PRODUCTOS POR SECCIÓN ──
-// function renderProductos(lista = CONFIG.productos) {
-//   const cont = document.getElementById("productos");
-//   if (!cont) return;
-//   cont.innerHTML = "";
-
-//   const texto = document.getElementById("buscador")?.value.trim().toLowerCase() || "";
-//   let filtrados = lista;
-
-//   if (texto !== "") {
-//     filtrados = lista.filter(p =>
-//       p.nombre.toLowerCase().includes(texto) ||
-//       (p.descripcion && p.descripcion.toLowerCase().includes(texto))
-//     );
-//   } else if (categoriaActiva !== "Todo") {
-//     filtrados = lista.filter(p => p.categoria === categoriaActiva);
-//   }
-
-//   // Ahora se incluyen las 4 secciones
-//   const secciones = ["Por Kilo", "Por Docena", "Minorista", "Mayorista"];
-
-//   secciones.forEach(secNombre => {
-//     const prods = filtrados.filter(p => p.categoria === secNombre);
-//     if (prods.length === 0) return;
-
-//     const divSec = document.createElement("div");
-//     divSec.className = "mt-8";
-//     divSec.innerHTML = `
-//       <h2 class="font-playfair text-2xl text-dorado font-bold uppercase tracking-wider mb-4 border-b border-dorado/20 pb-1">
-//         ${secNombre}
-//       </h2>
-//       <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-//         ${prods.map(p => {
-//           const badgeNew = p.isNew
-//             ? `<span class="absolute top-3 right-3 bg-blue-600 text-white text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider shadow-md z-10">NEW</span>`
-//             : "";
-
-//           return `
-//             <div class="bg-[#142A13] rounded-2xl overflow-hidden border border-dorado/20 shadow-lg flex flex-col relative">
-//               <div class="w-full h-36 overflow-hidden relative">
-//                 <img src="${p.imagen}" alt="${p.nombre}" class="w-full h-full object-cover">
-//                 ${badgeNew}
-//               </div>
-//               <div class="p-4 flex flex-col flex-1 justify-between">
-//                 <div>
-//                   <h3 class="font-bold text-base text-white mb-1">${p.nombre}</h3>
-//                   <p class="text-xs text-crema/70 line-clamp-2 mb-3">${p.descripcion}</p>
-//                 </div>
-//                 <div class="flex justify-between items-center mt-2 pt-2 border-t border-white/10">
-//                   <span class="text-doradoClaro font-bold text-xs uppercase">Elegir opción</span>
-//                   <button onclick="abrirModalVariantes('${p.id}')"
-//                     class="w-10 h-10 rounded-full bg-dorado hover:bg-doradoClaro text-black font-black flex items-center justify-center shadow-md active:scale-90 transition">
-//                     <i class="fa-solid fa-plus"></i>
-//                   </button>
-//                 </div>
-//               </div>
-//             </div>`;
-//         }).join("")}
-//       </div>`;
-//     cont.appendChild(divSec);
-//   });
-// }
-
 // ── RENDER PRODUCTOS EN CARRUSEL HORIZONTAL POR SECCIÓN ──
 function renderProductos(lista = CONFIG.productos) {
   const cont = document.getElementById("productos");
@@ -133,7 +70,6 @@ function renderProductos(lista = CONFIG.productos) {
       <h2 class="font-playfair text-2xl text-dorado font-bold uppercase tracking-wider mb-4 border-b border-dorado/20 pb-1 px-1">
         ${secNombre}
       </h2>
-      <!-- Contenedor con scroll horizontal táctil y suave -->
       <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-4 pt-1 snap-x snap-mandatory">
         ${prods.map(p => {
           const badgeNew = p.isNew
@@ -239,8 +175,11 @@ function actualizarResumenModal() {
 function confirmarVariante() {
   if (!opcionSeleccionada || !productoActivo) return;
   
+  const varianteTexto = opcionSeleccionada.label ? ` (${opcionSeleccionada.label})` : '';
+  const itemNombre = `${productoActivo.nombre}${varianteTexto} x${cantidadSeleccionada}`;
+
   carrito.push({
-    nombre: `${productoActivo.nombre} (${opcionSeleccionada.label}) x${cantidadSeleccionada}`,
+    nombre: itemNombre,
     precio: opcionSeleccionada.precio * cantidadSeleccionada
   });
 
@@ -411,32 +350,34 @@ function enviarPedido() {
   const monto = Math.round(subtotal * descuentoAplicado / 100);
   const totalFinal = subtotal - monto;
 
-  let mensaje = `*Pachipá - Nuevo Pedido*%0A━━━━━━━━━━━━━━━%0A`;
-  mensaje += `👤 *Cliente:* ${nombre} ${apellido}%0A`;
-  mensaje += `📦 *Método:* ${tipo}%0A`;
-  mensaje += `💳 *Pago:* ${pago}%0A`;
+  let mensaje = `*Pachipá - Nuevo Pedido*\n━━━━━━━━━━━━━━━\n`;
+  mensaje += `👤 *Cliente:* ${nombre} ${apellido}\n`;
+  mensaje += `📦 *Método:* ${tipo}\n`;
+  mensaje += `💳 *Pago:* ${pago}\n`;
 
   if (tipo === "Delivery") {
-    mensaje += `📍 *Dirección:* ${direccion}%0A`;
-    mensaje += `🗺️ *Zona:* ${zonaTexto}%0A`;
+    mensaje += `📍 *Dirección:* ${direccion}\n`;
+    mensaje += `🗺️ *Zona:* ${zonaTexto}\n`;
   } else {
-    mensaje += `🏠 *Retiro en local (Blanco Encalada)*%0A`;
+    mensaje += `🏠 *Retiro en local (Blanco Encalada)*\n`;
   }
 
-  mensaje += `%0A🍴 *Productos:*%0A`;
+  mensaje += `\n🍴 *Productos:*\n`;
   carrito.forEach(x => {
-    mensaje += `• ${x.nombre} — $${x.precio.toLocaleString()}%0A`;
+    mensaje += `• ${x.nombre} — $${x.precio.toLocaleString()}\n`;
   });
 
-  mensaje += `%0A━━━━━━━━━━━━━━━%0A`;
-  mensaje += `🧾 *Subtotal:* $${subtotal.toLocaleString()}%0A`;
+  mensaje += `\n━━━━━━━━━━━━━━━\n`;
+  mensaje += `🧾 *Subtotal:* $${subtotal.toLocaleString()}\n`;
 
   if (descuentoAplicado > 0) {
-    mensaje += `🎟️ *Cupón (${codigoUsado}):* -$${monto.toLocaleString()} (${descuentoAplicado}% off)%0A`;
+    mensaje += `🎟️ *Cupón (${codigoUsado}):* -$${monto.toLocaleString()} (${descuentoAplicado}% off)\n`;
   }
 
   mensaje += `💰 *Total Final: $${totalFinal.toLocaleString()}*`;
 
-  window.open(`https://wa.me/${CONFIG.telefono}?text=${mensaje}`);
+  const textoEncoded = encodeURIComponent(mensaje);
+
+  window.open(`https://wa.me/${CONFIG.telefono}?text=${textoEncoded}`);
   setTimeout(() => { location.reload(); }, 500);
 }
