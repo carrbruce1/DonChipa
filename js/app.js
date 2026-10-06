@@ -16,6 +16,25 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("buscador")?.addEventListener("input", buscar);
 });
 
+// ── CONTROL DE CUPOS (PREVENTA DÍA DE LA MADRE) ──
+function obtenerCuposRestantes() {
+  const cuposGuardados = localStorage.getItem("cupos_preventa_mama");
+  if (cuposGuardados === null) {
+    const iniciales = CONFIG.preventaMama?.cuposTotales || 10;
+    localStorage.setItem("cupos_preventa_mama", iniciales);
+    return iniciales;
+  }
+  return parseInt(cuposGuardados, 10);
+}
+
+function descontarCupoPreventa() {
+  let cupos = obtenerCuposRestantes();
+  if (cupos > 0) {
+    cupos -= 1;
+    localStorage.setItem("cupos_preventa_mama", cupos);
+  }
+}
+
 // ── CATEGORÍAS ──
 function renderCategorias() {
   const cont = document.getElementById("categorias");
@@ -24,11 +43,11 @@ function renderCategorias() {
   const todas = [{ id: "Todo", nombre: "Todo" }, ...CONFIG.categorias];
   todas.forEach(cat => {
     const activa = cat.id === categoriaActiva
-      ? "bg-dorado text-black"
+      ? "bg-dorado text-black font-extrabold"
       : "bg-transparent text-doradoClaro border-dorado/40";
     cont.innerHTML += `
       <button onclick="filtrar('${cat.id}')"
-        class="flex-shrink-0 px-5 py-2 rounded-full border text-sm font-bold transition-colors ${activa}">
+        class="flex-shrink-0 px-5 py-2 rounded-full border text-sm transition-colors ${activa}">
         ${cat.nombre}
       </button>`;
   });
@@ -40,7 +59,68 @@ function filtrar(id) {
   renderProductos();
 }
 
-// ── RENDER PRODUCTOS EN CARRUSEL HORIZONTAL POR SECCIÓN ──
+// ── CARD SIN PRECIO ──
+function crearCardProducto(p) {
+  if (p.esComboMama) {
+    const cuposRestantes = obtenerCuposRestantes();
+
+    return `
+      <div class="flex-none w-[260px] sm:w-[280px] snap-start bg-white rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between border border-gray-100 p-3 relative">
+        <div class="w-full h-44 bg-slate-50 rounded-xl overflow-hidden relative">
+          <span class="absolute top-2 left-2 text-[10px] font-bold bg-pink-500 text-white px-2 py-0.5 rounded-full z-10 shadow-sm">
+            Especial
+          </span>
+          <img src="${p.imagen}" alt="${p.nombre}" class="w-full h-full object-cover">
+        </div>
+
+        <div class="mt-3 flex flex-col gap-1 px-1">
+          <h3 class="font-bold text-gray-900 text-base uppercase tracking-wide leading-tight">${p.nombre}</h3>
+          <p class="text-xs text-gray-500 line-clamp-2 leading-snug">${p.descripcion || 'Edición especial Día de la Madre'}</p>
+          
+          <div class="mt-2 flex items-center justify-between">
+            <span class="text-[10px] font-bold text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full">
+              🔥 Quedan ${cuposRestantes} cupos
+            </span>
+          </div>
+        </div>
+
+        <button onclick="agregarComboMamaDirecto('${p.id}')"
+          class="mt-4 w-full py-2.5 bg-amber-400 hover:bg-amber-500 text-gray-900 rounded-xl text-xs font-black uppercase tracking-wider transition active:scale-95 flex items-center justify-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-cart-shopping"></i> ELEGIR OPCIONES
+        </button>
+      </div>`;
+  }
+
+  const badgesVariantes = p.variantes && p.variantes.length > 0 
+    ? p.variantes.map(v => `<span class="text-[10px] font-semibold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md">${v.label}</span>`).join(" ")
+    : "";
+
+  return `
+    <div class="flex-none w-[260px] sm:w-[280px] snap-start bg-white rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between border border-gray-100 p-3">
+      <div class="w-full h-44 bg-slate-50 rounded-xl overflow-hidden">
+        <img src="${p.imagen}" alt="${p.nombre}" class="w-full h-full object-cover">
+      </div>
+
+      <div class="mt-3 flex flex-col gap-1 px-1">
+        <h3 class="font-bold text-gray-900 text-base uppercase tracking-wide leading-tight">${p.nombre}</h3>
+        <p class="text-xs text-gray-500 line-clamp-2 leading-snug">${p.descripcion || 'Sabor tradicional del litoral con blend de quesos.'}</p>
+
+        ${badgesVariantes ? `
+          <div class="mt-2 flex flex-wrap gap-1">
+            <span class="text-[9px] uppercase font-bold text-gray-400 w-full">Opciones disponibles:</span>
+            ${badgesVariantes}
+          </div>
+        ` : ""}
+      </div>
+
+      <button onclick="abrirModalVariantes('${p.id}')"
+        class="mt-4 w-full py-2.5 bg-amber-400 hover:bg-amber-500 text-gray-900 rounded-xl text-xs font-black uppercase tracking-wider transition active:scale-95 flex items-center justify-center gap-1.5 shadow-sm">
+        <i class="fa-solid fa-cart-shopping"></i> ELEGIR OPCIONES
+      </button>
+    </div>`;
+}
+
+// ── RENDER PRODUCTOS ──
 function renderProductos(lista = CONFIG.productos) {
   const cont = document.getElementById("productos");
   if (!cont) return;
@@ -49,60 +129,59 @@ function renderProductos(lista = CONFIG.productos) {
   const texto = document.getElementById("buscador")?.value.trim().toLowerCase() || "";
   let filtrados = lista;
 
+  if (categoriaActiva !== "Todo") {
+    filtrados = filtrados.filter(p => p.categoria === categoriaActiva);
+  }
+
   if (texto !== "") {
-    filtrados = lista.filter(p =>
+    filtrados = filtrados.filter(p =>
       p.nombre.toLowerCase().includes(texto) ||
       (p.descripcion && p.descripcion.toLowerCase().includes(texto))
     );
-  } else if (categoriaActiva !== "Todo") {
-    filtrados = lista.filter(p => p.categoria === categoriaActiva);
   }
 
-  const secciones = ["Por Kilo", "Por Docena", "Minorista", "Mayorista"];
+  const secciones = ["Especial Mama", "Por Kilo", "Por Docena", "Minorista", "Mayorista"];
 
   secciones.forEach(secNombre => {
     const prods = filtrados.filter(p => p.categoria === secNombre);
     if (prods.length === 0) return;
 
+    const cardsHtml = prods.map(p => crearCardProducto(p)).join("");
+
     const divSec = document.createElement("div");
     divSec.className = "mt-8";
     divSec.innerHTML = `
       <h2 class="font-playfair text-2xl text-dorado font-bold uppercase tracking-wider mb-4 border-b border-dorado/20 pb-1 px-1">
-        ${secNombre}
+        ${secNombre === "Especial Mama" ? "Especial Día de la Madre" : secNombre}
       </h2>
-      <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-4 pt-1 snap-x snap-mandatory">
-        ${prods.map(p => {
-          const badgeNew = p.isNew
-            ? `<span class="absolute top-3 right-3 bg-blue-600 text-white text-[10px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider shadow-md z-10">NEW</span>`
-            : "";
-
-          return `
-            <div class="flex-none w-[260px] sm:w-[280px] snap-start bg-[#142A13] rounded-2xl overflow-hidden border border-dorado/20 shadow-lg flex flex-col relative">
-              <div class="w-full h-36 overflow-hidden relative">
-                <img src="${p.imagen}" alt="${p.nombre}" class="w-full h-full object-cover">
-                ${badgeNew}
-              </div>
-              <div class="p-4 flex flex-col flex-1 justify-between">
-                <div>
-                  <h3 class="font-bold text-base text-white mb-1">${p.nombre}</h3>
-                  <p class="text-xs text-crema/70 line-clamp-2 mb-3">${p.descripcion}</p>
-                </div>
-                <div class="flex justify-between items-center mt-2 pt-2 border-t border-white/10">
-                  <span class="text-doradoClaro font-bold text-xs uppercase">Elegir opción</span>
-                  <button onclick="abrirModalVariantes('${p.id}')"
-                    class="w-10 h-10 rounded-full bg-dorado hover:bg-doradoClaro text-black font-black flex items-center justify-center shadow-md active:scale-90 transition">
-                    <i class="fa-solid fa-plus"></i>
-                  </button>
-                </div>
-              </div>
-            </div>`;
-        }).join("")}
+      <div class="flex gap-6 overflow-x-auto hide-scrollbar pb-6 pt-2 snap-x snap-mandatory">
+        ${cardsHtml}
       </div>`;
     cont.appendChild(divSec);
   });
 }
 
 function buscar() { renderProductos(); }
+
+// ── AGREGAR COMBO MAMA DIRECTO ──
+function agregarComboMamaDirecto(prodId) {
+  const prod = CONFIG.productos.find(p => p.id === prodId);
+  if (!prod) return;
+
+  const cuposRestantes = obtenerCuposRestantes();
+  const esPreventa = cuposRestantes > 0;
+  const precio = esPreventa ? CONFIG.preventaMama.precioPreventa : CONFIG.preventaMama.precioRegular;
+  const etiquetaPrecio = esPreventa ? " (PREVENTA)" : "";
+
+  carrito.push({
+    nombre: `${prod.nombre}${etiquetaPrecio}`,
+    precio: precio,
+    esComboMama: true
+  });
+
+  actualizarContador();
+  abrirCarrito();
+}
 
 // ── MODAL VARIANTES ──
 function abrirModalVariantes(prodId) {
@@ -174,13 +253,14 @@ function actualizarResumenModal() {
 
 function confirmarVariante() {
   if (!opcionSeleccionada || !productoActivo) return;
-  
+
   const varianteTexto = opcionSeleccionada.label ? ` (${opcionSeleccionada.label})` : '';
   const itemNombre = `${productoActivo.nombre}${varianteTexto} x${cantidadSeleccionada}`;
 
   carrito.push({
     nombre: itemNombre,
-    precio: opcionSeleccionada.precio * cantidadSeleccionada
+    precio: opcionSeleccionada.precio * cantidadSeleccionada,
+    esComboMama: !!productoActivo.esComboMama
   });
 
   actualizarContador();
@@ -268,7 +348,7 @@ function abrirCarrito() {
           <div class="text-white font-bold text-sm">${p.nombre}</div>
           <div class="text-dorado text-xs font-bold">$${p.precio.toLocaleString()}</div>
         </div>
-        <button onclick="eliminarItem(${i})" class="w-8 h-8 rounded-full bg-red-500/20 text-red-400 hover:bg-red-500/30">
+        <button onclick="eliminarItem(${i})" class="w-8 h-8 rounded-full bg-red-500/20 text-red-400 hover:bg-red-500/30 flex items-center justify-center">
           <i class="fa-solid fa-trash-can text-xs"></i>
         </button>
       </div>`;
@@ -280,7 +360,10 @@ function abrirCarrito() {
 function eliminarItem(i) {
   carrito.splice(i, 1);
   actualizarContador();
-  carrito.length === 0 ? cerrarCarrito() : abrirCarrito();
+  if (codigoUsado) {
+    aplicarCupon();
+  }
+  carrito.length ===0 ? cerrarCarrito() : abrirCarrito();
 }
 
 function cerrarCarrito() {
@@ -299,10 +382,13 @@ function cerrarFormulario() {
 }
 
 function aplicarCupon() {
-  const input = document.getElementById("cupon").value.trim().toUpperCase();
+  const cuponInput = document.getElementById("cupon");
+  if (!cuponInput) return;
+
+  const input = cuponInput.value.trim().toUpperCase();
   const mensaje = document.getElementById("mensajeCupon");
   const resumen = document.getElementById("resumenDescuento");
-  mensaje.classList.remove("hidden");
+  if (mensaje) mensaje.classList.remove("hidden");
 
   const cupon = CONFIG.cupones[input];
 
@@ -315,20 +401,24 @@ function aplicarCupon() {
     const monto = Math.round(subtotal * descuentoAplicado / 100);
     const totalFinal = subtotal - monto;
 
-    mensaje.innerText = `✅ Cupón aplicado — ${descuentoAplicado}% OFF`;
-    mensaje.className = "text-xs mt-2 font-bold text-green-600";
+    if (mensaje) {
+      mensaje.innerText = `✅ Cupón aplicado — ${descuentoAplicado}% OFF`;
+      mensaje.className = "text-xs mt-2 font-bold text-green-600";
+    }
 
     document.getElementById("subtotalSinDesc").innerText = `$${subtotal.toLocaleString()}`;
     document.getElementById("labelDescuento").innerText = `Descuento ${descuentoAplicado}%`;
     document.getElementById("montoDescuento").innerText = `-$${monto.toLocaleString()}`;
     document.getElementById("totalConDesc").innerText = `$${totalFinal.toLocaleString()}`;
-    resumen.classList.remove("hidden");
+    if (resumen) resumen.classList.remove("hidden");
   } else {
     descuentoAplicado = 0;
     codigoUsado = "";
-    mensaje.innerText = "❌ Código inválido o expirado";
-    mensaje.className = "text-xs mt-2 font-bold text-red-500";
-    resumen.classList.add("hidden");
+    if (mensaje) {
+      mensaje.innerText = "❌ Código inválido o expirado";
+      mensaje.className = "text-xs mt-2 font-bold text-red-500";
+    }
+    if (resumen) resumen.classList.add("hidden");
   }
 }
 
@@ -344,6 +434,11 @@ function enviarPedido() {
   if (!nombre || !apellido) { alert("Completá tu nombre y apellido."); return; }
   if (tipo === "Delivery" && !direccion) { alert("Ingresá tu dirección para el envío."); return; }
   if (!pago) { alert("Seleccioná un método de pago."); return; }
+
+  const tieneComboMama = carrito.some(x => x.esComboMama);
+  if (tieneComboMama) {
+    descontarCupoPreventa();
+  }
 
   let subtotal = 0;
   carrito.forEach(x => subtotal += x.precio);
@@ -366,6 +461,10 @@ function enviarPedido() {
   carrito.forEach(x => {
     mensaje += `• ${x.nombre} — $${x.precio.toLocaleString()}\n`;
   });
+
+  if (tieneComboMama) {
+    mensaje += `\n📌 *Reserva Combo Día de la Madre:* Retiro por Saavedra (horario a coordinar).\n`;
+  }
 
   mensaje += `\n━━━━━━━━━━━━━━━\n`;
   mensaje += `🧾 *Subtotal:* $${subtotal.toLocaleString()}\n`;
