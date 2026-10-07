@@ -20,7 +20,7 @@ const CONFIG = {
     { nombre: "Take away: Saavedra", costo: 0 },
     { nombre: "Take away: San Isidro", costo: "Con cargo"},
     { nombre: "Take away: Obelisco", costo: 0 },
-    { nombre: "Otras zonas (Costo adicional)", costo: "Con cargo" }
+    { nombre: "Otras zonas ", costo: "Con cargo" }
   ],
 
   categorias: [
