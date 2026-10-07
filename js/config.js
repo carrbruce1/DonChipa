@@ -2,7 +2,7 @@ const CONFIG = {
   nombre: "Pachipá",
   telefono: "5493454175555",
   moneda: "$",
-
+  telefonoPromo: 5491168531675,
   pagos: {
     efectivo: true,
     transferencia: true,

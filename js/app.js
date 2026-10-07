@@ -59,34 +59,59 @@ function filtrar(id) {
   renderProductos();
 }
 
-// ── CARD SIN PRECIO ──
+// ── CARD PRODUCTO / BOX CON DETECCIÓN DE CUPOS ──
 function crearCardProducto(p) {
-  if (p.esComboMama) {
+  if (p.esComboMama || p.telefonoWhatsApp) {
     const cuposRestantes = obtenerCuposRestantes();
+    const tieneCupos = cuposRestantes > 0;
+
+    // Precios dinámicos desde config
+    const precioPreventa = CONFIG.preventaMama?.precioPreventa;
+    const precioRegular = CONFIG.preventaMama?.precioRegular;
+
+    // Etiqueta de cupos / estado
+    const badgeCupos = tieneCupos
+      ? `<span class="text-[10px] font-bold text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full">🔥 Quedan ${cuposRestantes} cupos con descuento</span>`
+      : `<span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">❌ Cupos con descuento agotados (Precio regular)</span>`;
+
+    // Etiqueta superior
+    const badgeSuperior = tieneCupos
+      ? `<span class="absolute top-2 left-2 text-[10px] font-bold bg-pink-500 text-white px-2 py-0.5 rounded-full z-10 shadow-sm">Preventa OFF</span>`
+      : `<span class="absolute top-2 left-2 text-[10px] font-bold bg-gray-600 text-white px-2 py-0.5 rounded-full z-10 shadow-sm">Precio Regular</span>`;
+
+    // Precios formateados en texto si existen
+    const textoPrecios = (precioPreventa && precioRegular) 
+      ? (tieneCupos 
+          ? `<div class="mt-1 flex items-center gap-2">
+               <span class="text-sm font-extrabold text-pink-600">$${precioPreventa.toLocaleString()}</span>
+               <span class="text-xs text-gray-400 line-through">$${precioRegular.toLocaleString()}</span>
+             </div>`
+          : `<div class="mt-1">
+               <span class="text-sm font-extrabold text-gray-800">$${precioRegular.toLocaleString()}</span>
+             </div>`)
+      : "";
 
     return `
       <div class="flex-none w-[260px] sm:w-[280px] snap-start bg-white rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between border border-gray-100 p-3 relative">
         <div class="w-full h-44 bg-slate-50 rounded-xl overflow-hidden relative">
-          <span class="absolute top-2 left-2 text-[10px] font-bold bg-pink-500 text-white px-2 py-0.5 rounded-full z-10 shadow-sm">
-            Especial
-          </span>
+          ${badgeSuperior}
           <img src="${p.imagen}" alt="${p.nombre}" class="w-full h-full object-cover">
         </div>
 
         <div class="mt-3 flex flex-col gap-1 px-1">
           <h3 class="font-bold text-gray-900 text-base uppercase tracking-wide leading-tight">${p.nombre}</h3>
-          <p class="text-xs text-gray-500 line-clamp-2 leading-snug">${p.descripcion || 'Edición especial Día de la Madre'}</p>
+          <p class="text-xs text-gray-500 line-clamp-2 leading-snug">${p.descripcion || 'Edición especial'}</p>
           
+          ${textoPrecios}
+
           <div class="mt-2 flex items-center justify-between">
-            <span class="text-[10px] font-bold text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full">
-              🔥 Quedan ${cuposRestantes} cupos
-            </span>
+            ${badgeCupos}
           </div>
         </div>
 
-        <button onclick="agregarComboMamaDirecto('${p.id}')"
-          class="mt-4 w-full py-2.5 bg-amber-400 hover:bg-amber-500 text-gray-900 rounded-xl text-xs font-black uppercase tracking-wider transition active:scale-95 flex items-center justify-center gap-1.5 shadow-sm">
-          <i class="fa-solid fa-cart-shopping"></i> ELEGIR OPCIONES
+        <button onclick="pedirBoxDirectoWhatsApp('${p.id}')"
+          class="mt-4 w-full py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-xl text-xs font-black uppercase tracking-wider transition active:scale-95 flex items-center justify-center gap-2 shadow-sm">
+          <i class="fa-brands fa-whatsapp text-sm"></i> PEDIR BOX POR WHATSAPP
         </button>
       </div>`;
   }
@@ -120,6 +145,31 @@ function crearCardProducto(p) {
     </div>`;
 }
 
+// ── REDIRECCIÓN DIRECTA A WHATSAPP PARA BOX / COMBOS ──
+function pedirBoxDirectoWhatsApp(prodId) {
+  const prod = CONFIG.productos.find(p => p.id === prodId);
+  if (!prod) return;
+
+  const cuposRestantes = obtenerCuposRestantes();
+  const tieneCupos = cuposRestantes > 0;
+
+  if (prod.esComboMama) {
+    descontarCupoPreventa();
+  }
+
+  const telefonoDestino = prod.telefonoWhatsApp || CONFIG.telefonoPromo || CONFIG.telefono;
+  const textoBase = prod.mensajePredeterminado || "Quiero pedir mi box";
+  const estadoPrecio = tieneCupos ? "(Aprovechando precio preventa)" : "(Precio regular)";
+
+  const mensaje = `Hola! ${textoBase}: *${prod.nombre}* ${estadoPrecio}`;
+  const textoEncoded = encodeURIComponent(mensaje);
+
+  // Volvemos a renderizar los productos para que impacte el cupo descontado visualmente
+  renderProductos();
+
+  window.open(`https://wa.me/${telefonoDestino}?text=${textoEncoded}`, "_blank");
+}
+
 // ── RENDER PRODUCTOS ──
 function renderProductos(lista = CONFIG.productos) {
   const cont = document.getElementById("productos");
@@ -140,7 +190,7 @@ function renderProductos(lista = CONFIG.productos) {
     );
   }
 
-  const secciones = ["Especial Mama", "Por Kilo", "Por Docena", "Minorista", "Mayorista"];
+  const secciones = ["Especial Mama", "Combos Especiales", "Por Kilo", "Por Docena", "Minorista", "Mayorista"];
 
   secciones.forEach(secNombre => {
     const prods = filtrados.filter(p => p.categoria === secNombre);
@@ -162,26 +212,6 @@ function renderProductos(lista = CONFIG.productos) {
 }
 
 function buscar() { renderProductos(); }
-
-// ── AGREGAR COMBO MAMA DIRECTO ──
-function agregarComboMamaDirecto(prodId) {
-  const prod = CONFIG.productos.find(p => p.id === prodId);
-  if (!prod) return;
-
-  const cuposRestantes = obtenerCuposRestantes();
-  const esPreventa = cuposRestantes > 0;
-  const precio = esPreventa ? CONFIG.preventaMama.precioPreventa : CONFIG.preventaMama.precioRegular;
-  const etiquetaPrecio = esPreventa ? " (PREVENTA)" : "";
-
-  carrito.push({
-    nombre: `${prod.nombre}${etiquetaPrecio}`,
-    precio: precio,
-    esComboMama: true
-  });
-
-  actualizarContador();
-  abrirCarrito();
-}
 
 // ── MODAL VARIANTES ──
 function abrirModalVariantes(prodId) {
@@ -363,7 +393,7 @@ function eliminarItem(i) {
   if (codigoUsado) {
     aplicarCupon();
   }
-  carrito.length ===0 ? cerrarCarrito() : abrirCarrito();
+  carrito.length === 0 ? cerrarCarrito() : abrirCarrito();
 }
 
 function cerrarCarrito() {
@@ -435,11 +465,6 @@ function enviarPedido() {
   if (tipo === "Delivery" && !direccion) { alert("Ingresá tu dirección para el envío."); return; }
   if (!pago) { alert("Seleccioná un método de pago."); return; }
 
-  const tieneComboMama = carrito.some(x => x.esComboMama);
-  if (tieneComboMama) {
-    descontarCupoPreventa();
-  }
-
   let subtotal = 0;
   carrito.forEach(x => subtotal += x.precio);
   const monto = Math.round(subtotal * descuentoAplicado / 100);
@@ -461,10 +486,6 @@ function enviarPedido() {
   carrito.forEach(x => {
     mensaje += `• ${x.nombre} — $${x.precio.toLocaleString()}\n`;
   });
-
-  if (tieneComboMama) {
-    mensaje += `\n📌 *Reserva Combo Día de la Madre:* Retiro por Saavedra (horario a coordinar).\n`;
-  }
 
   mensaje += `\n━━━━━━━━━━━━━━━\n`;
   mensaje += `🧾 *Subtotal:* $${subtotal.toLocaleString()}\n`;
