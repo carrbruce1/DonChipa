@@ -164,7 +164,6 @@ function pedirBoxDirectoWhatsApp(prodId) {
   const mensaje = `Hola! ${textoBase}: *${prod.nombre}* ${estadoPrecio}`;
   const textoEncoded = encodeURIComponent(mensaje);
 
-  // Volvemos a renderizar los productos para que impacte el cupo descontado visualmente
   renderProductos();
 
   window.open(`https://wa.me/${telefonoDestino}?text=${textoEncoded}`, "_blank");
@@ -370,19 +369,22 @@ function abrirCarrito() {
   if (!lista) return;
   lista.innerHTML = "";
   let total = 0;
+
   carrito.forEach((p, i) => {
     total += p.precio;
     lista.innerHTML += `
-      <div class="flex justify-between items-center py-3 border-b border-white/10">
-        <div>
-          <div class="text-white font-bold text-sm">${p.nombre}</div>
-          <div class="text-dorado text-xs font-bold">$${p.precio.toLocaleString()}</div>
+      <div class="flex justify-between items-center py-3 border-b border-gray-100 gap-3">
+        <div class="flex-1 min-w-0">
+          <!-- Texto en color gris/oscuro para fondo claro -->
+          <p class="text-gray-900 font-bold text-sm leading-snug break-words">${p.nombre}</p>
+          <p class="text-amber-600 font-extrabold text-xs mt-0.5">$${p.precio.toLocaleString()}</p>
         </div>
-        <button onclick="eliminarItem(${i})" class="w-8 h-8 rounded-full bg-red-500/20 text-red-400 hover:bg-red-500/30 flex items-center justify-center">
+        <button onclick="eliminarItem(${i})" class="w-8 h-8 rounded-full bg-red-100 text-red-500 hover:bg-red-200 flex items-center justify-center flex-shrink-0 transition">
           <i class="fa-solid fa-trash-can text-xs"></i>
         </button>
       </div>`;
   });
+
   document.getElementById("totalCarrito").innerText = "$" + total.toLocaleString();
   document.getElementById("modalCarrito").classList.remove("hidden");
 }
