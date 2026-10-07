@@ -527,6 +527,10 @@ function enviarPedido() {
   mensaje += `📦 *Método:* ${tipo}\n`;
   mensaje += `💳 *Pago:* ${pago}\n`;
 
+  if (pago === "Transferencia" && CONFIG.pagos.alias) {
+    mensaje += `📌 *Alias para transferir:* ${CONFIG.pagos.alias}\n`;
+  }
+
   if (tipo === "Delivery") {
     mensaje += `📍 *Dirección:* ${direccion}\n`;
     mensaje += `🗺️ *Zona:* ${zonaTexto}\n`;
