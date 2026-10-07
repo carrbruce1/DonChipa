@@ -1,8 +1,5 @@
-// ==========================================
-// CONFIGURACIÓN DE SUPABASE
-// ==========================================
-const SUPABASE_URL = "https://fyemmozlzywnfcsyamqn.supabase.co"; // Tu URL de Supabase
-const SUPABASE_ANON_KEY = "sb_publishable_Ik5Atc6ct15a3RsmxblRDg_OrqDhqjC";       // Tu Anon Key de Supabase
+const SUPABASE_URL = "https://fyemmozlzywnfcsyamqn.supabase.co"; 
+const SUPABASE_ANON_KEY = "sb_publishable_Ik5Atc6ct15a3RsmxblRDg_OrqDhqjC";  
 
 const supabaseClient = window.supabase
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -55,13 +52,18 @@ async function descontarCupoPreventa() {
   try {
     const cuposActuales = await obtenerCuposRestantes();
     if (cuposActuales > 0) {
-      await supabaseClient
+      const { error } = await supabaseClient
         .from("promociones")
         .update({ cupos: cuposActuales - 1 })
-        .eq("id", "combo-mama");
+        .eq("id", "combo-mama")
+        .select();
+
+      if (error) {
+        console.error("Error de permisos/update en Supabase:", error.message);
+      }
     }
   } catch (err) {
-    console.error("Error al descontar cupo en Supabase:", err);
+    console.error("Error al descontar cupo:", err);
   }
 }
 
@@ -224,23 +226,35 @@ async function pedirBoxDirectoWhatsApp(prodId) {
   const prod = CONFIG.productos.find(p => p.id === prodId);
   if (!prod) return;
 
+  // 1. Abrimos la ventana inmediatamente al hacer clic (evita bloqueo de pop-ups en celulares)
+  const win = window.open("", "_blank");
+
   const cuposRestantes = await obtenerCuposRestantes();
   const tieneCupos = cuposRestantes > 0;
 
+  // 2. Descontamos el cupo en Supabase
   if (prod.esComboMama && tieneCupos) {
     await descontarCupoPreventa();
   }
 
+  // 3. Armamos el mensaje
   const telefonoDestino = prod.telefonoWhatsApp || CONFIG.telefonoPromo || CONFIG.telefono;
   const textoBase = prod.mensajePredeterminado || "Quiero pedir mi box";
   const estadoPrecio = tieneCupos ? "(Aprovechando precio preventa)" : "(Precio regular)";
 
   const mensaje = `Hola! ${textoBase}: *${prod.nombre}* ${estadoPrecio}`;
   const textoEncoded = encodeURIComponent(mensaje);
+  const urlWhatsApp = `https://wa.me/${telefonoDestino}?text=${textoEncoded}`;
 
+  // 4. Redirigimos la ventana previamente abierta a WhatsApp
+  if (win) {
+    win.location.href = urlWhatsApp;
+  } else {
+    window.location.href = urlWhatsApp;
+  }
+
+  // 5. Re-renderizamos los productos para actualizar el contador en pantalla
   await renderProductos();
-
-  window.open(`https://wa.me/${telefonoDestino}?text=${textoEncoded}`, "_blank");
 }
 
 // ==========================================
