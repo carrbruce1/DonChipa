@@ -18,9 +18,9 @@ const CONFIG = {
   zonas: [
     { nombre: "Take away: Palermo", costo: 0 },
     { nombre: "Take away: Saavedra", costo: 0 },
-    { nombre: "Take away: San Isidro", costo: 0 },
+    { nombre: "Take away: San Isidro", costo: "Con cargo"},
     { nombre: "Take away: Obelisco", costo: 0 },
-    { nombre: "Otras zonas (Costo adicional)", costo: "A coordinar" }
+    { nombre: "Otras zonas (Costo adicional)", costo: "Con cargo" }
   ],
 
   categorias: [
