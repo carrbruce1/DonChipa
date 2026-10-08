@@ -136,7 +136,7 @@ const CONFIG = {
       nombre: "Pack Minorista Clásico",
       descripcion: "Bolsitas individuales para consumo personal.",
       categoria: "Minorista",
-      imagen: "img/chipa2.jpeg",
+      imagen: "img/chipas/chipaminorista.jpeg",
       isNew: false,
       variantes: [
         { id: "pack-1", label: "Bolsa 2kg", precio: 40000 },
