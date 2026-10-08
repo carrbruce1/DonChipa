@@ -85,7 +85,7 @@ const CONFIG = {
       nombre: "Chipá Bastón",
       descripcion: "Formato alargado, suave por dentro.",
       categoria: "Por Docena",
-      imagen: "img/chipas/baston.png",
+      imagen: "img/chipas/chipab.png",
       isNew: false,
       variantes: [
         { id: "1u",  label: "1 Unidad",    precio: 2500 },
@@ -98,7 +98,7 @@ const CONFIG = {
       nombre: "Chipá Palillo",
       descripcion: "Bocado fino e ideal para acompañar el mate.",
       categoria: "Por Docena",
-      imagen: "img/chipas/chipap.jpg",
+      imagen: "img/chipas/palillo.png",
       isNew: false,
       variantes: [
         { id: "1u",  label: "1 Unidad",    precio: 2000 },
