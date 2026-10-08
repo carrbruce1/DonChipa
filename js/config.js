@@ -44,7 +44,7 @@ const CONFIG = {
       nombre: "Chipá Tradicional",
       descripcion: "Sabor tradicional del litoral con blend de quesos.",
       categoria: "Por Kilo",
-      imagen: "img/chipas/chipat.jpg",
+      imagen: "img/chipas/chipat.jpeg",
       isNew: false,
       variantes: [
         { id: "cuarto", label: "1/4 KG", precio: 7000 },
@@ -57,7 +57,7 @@ const CONFIG = {
       nombre: "Chipá Cubo",
       descripcion: "Presentación en cubos super crocantes por fuera.",
       categoria: "Por Kilo",
-      imagen: "img/chipas/chipac.jpg",
+      imagen: "img/chipas/chipac.jpeg",
       isNew: false,
       variantes: [
         { id: "cuarto", label: "1/4 KG", precio: 8000 },
@@ -152,7 +152,7 @@ const CONFIG = {
       nombre: "Caja Chipá Congelado",
       descripcion: "Cajas por mayor listos para hornear en locales o eventos.",
       categoria: "Mayorista",
-      imagen: "img/chipas/chipaf.jpg",
+      imagen: "img/chipas/chipafrio.jpeg",
       isNew: false,
       variantes: [
         { id: "caja-3kg",  label: "3 KG Congelado",  precio: 54000 },
