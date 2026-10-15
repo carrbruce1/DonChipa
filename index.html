@@ -48,8 +48,6 @@
       border: none !important;
       outline: none !important;
     }
-
-    /* Estilo de la Card inspirado en la imagen */
     #productos article, 
     #productos .product-card,
     .product-card {
@@ -71,7 +69,6 @@
       box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12) !important;
     }
 
-    /* Botones de categoría */
     #categorias button {
       border: 1.5px solid #E5A823 !important;
       background-color: #E5A823 !important;
@@ -95,14 +92,17 @@
 </head>
 
 <body class="bg-fondoBase text-verde font-nunito min-h-screen">
-
-  <!-- Hero Header -->
   <header class="relative w-full pt-12 pb-16 px-6 bg-verde hero-background flex flex-col items-center justify-center text-center shadow-md">
     <a href="https://wa.me/5493454175555?text=Hola%20Pachipá!" target="_blank" class="mb-4 block transform hover:scale-105 transition-transform duration-200">
       <img src="img/pachipa-logo.png" alt="Logo Pachipá" class="w-32 h-32 object-contain drop-shadow-lg">
     </a>
     <h1 class="font-playfair text-4xl md:text-5xl font-black text-white drop-shadow-md">Pachipá</h1>
     <p class="text-xs md:text-sm text-crema mt-2 uppercase tracking-[0.2em] font-bold drop-shadow">Sabor Tradicional del Litoral</p>
+    <a href="/pages/login.html" 
+   class="absolute top-4 right-4 flex items-center gap-1.5 text-crema text-xs font-bold uppercase tracking-widest hover:text-dorado transition-colors">
+  <i class="fa fa-user-circle text-base"></i>
+  <span>Login</span>
+</a>
   </header>
 
   <!-- Buscador -->

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pachipá — Acceso Administrador</title>
+  <link rel="shortcut icon" href="/img/pachipa-logo.png" type="image/x-icon">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Supabase JS Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Configuración de Colores y Estilos Pachipá -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            verdeOscuro: '#142A13',
+            verdeClaro: '#1f421e',
+            dorado: '#D4AF37',
+            doradoClaro: '#F3E5AB',
+            crema: '#faf7f2',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .font-playfair {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    .bg-hero-login {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.75)), url('/img/banner/hero.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    input:focus {
+      border-color: #D4AF37 !important;
+      outline: none;
+    }
+  </style>
+</head>
+<body class="bg-hero-login min-h-screen flex items-center justify-center p-4">
+
+  <!-- TARJETA DE LOGIN -->
+  <div class="w-full max-w-md bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-dorado/30 overflow-hidden">
+    
+    <!-- HEADER MARCA PACHIPÁ CON LOGO -->
+    <div class="bg-verdeOscuro p-8 text-center relative border-b-2 border-dorado">
+      <div class="h-20 flex items-center justify-center mb-2">
+        <img src="/img/pachipa-logo.png" alt="Pachipá Logo" class="h-full object-contain filter drop-shadow-md">
+      </div>
+      <p class="text-[11px] text-doradoClaro/80 tracking-widest uppercase mt-1">Panel de Control & Administración</p>
+    </div>
+
+    <!-- FORMULARIO DE ACCESO -->
+    <div class="p-6 md:p-8">
+      <form onsubmit="iniciarSesion(event)" class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+            <i class="fa-solid fa-envelope text-verdeOscuro mr-1"></i> Correo Electrónico
+          </label>
+          <input type="email" id="loginEmail" required placeholder="admin@pachipa.com" 
+                 class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm bg-gray-50 focus:bg-white transition-all">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+            <i class="fa-solid fa-key text-verdeOscuro mr-1"></i> Contraseña
+          </label>
+          <input type="password" id="loginPassword" required placeholder="••••••••" 
+                 class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm bg-gray-50 focus:bg-white transition-all">
+        </div>
+
+        <button type="submit" id="btnIngresar" 
+                class="w-full bg-verdeOscuro hover:bg-verdeClaro text-dorado font-extrabold py-3.5 rounded-xl text-sm uppercase tracking-wider transition-all duration-200 shadow-lg active:scale-95 flex items-center justify-center gap-2">
+          <span>Ingresar al Panel</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </button>
+      </form>
+
+      <!-- MENSAJE DE ERROR -->
+      <div id="mensajeError" class="hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs text-center font-bold"></div>
+
+      <!-- VOLVER A LA TIENDA -->
+      <div class="mt-6 pt-4 border-t border-gray-200 text-center">
+        <a href="/index.html" class="text-xs text-gray-600 hover:text-verdeOscuro transition font-bold inline-flex items-center gap-1.5">
+          <i class="fa-solid fa-store"></i> Volver al Catálogo
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://fyemmozlzywnfcsyamqn.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_Ik5Atc6ct15a3RsmxblRDg_OrqDhqjC";
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // Escuchador dinámico de sesión (Evita loops)
+    db.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        window.location.replace("adminPanel.html");
+      }
+    });
+
+    async function iniciarSesion(e) {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const errorEl = document.getElementById("mensajeError");
+      const btn = document.getElementById("btnIngresar");
+
+      errorEl.classList.add("hidden");
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Verificando...</span>`;
+
+      const { data, error } = await db.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        errorEl.innerText = "❌ " + (error.message === "Invalid login credentials" ? "Credenciales incorrectas" : error.message);
+        errorEl.classList.remove("hidden");
+        btn.disabled = false;
+        btn.innerHTML = `<span>Ingresar al Panel</span> <i class="fa-solid fa-arrow-right text-xs"></i>`;
+      }
+    }
+  </script>
+</body>
+</html>

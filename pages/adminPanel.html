@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pachipá — Panel de Administración</title>
+  <link rel="shortcut icon" href="/img/pachipa-logo.png" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: { verdeOscuro: '#142A13', verdeClaro: '#1f421e', dorado: '#D4AF37', doradoClaro: '#F3E5AB', crema: '#faf7f2' },
+        fontFamily: { playfair: ['Playfair Display', 'Georgia', 'serif'], sans: ['Plus Jakarta Sans', 'sans-serif'] }
+      } }
+    }
+  </script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    input:focus, select:focus, textarea:focus { border-color: #D4AF37 !important; outline: none; }
+    .toast-in { animation: toastIn .3s ease; transition: all .25s; }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: none; } }
+    .pop-in { animation: popIn .2s ease; }
+    .h-screen { height: 100dvh !important; }               /* respeta la barra del navegador en celular */
+    @media (max-width: 767px) { input, select, textarea { font-size: 16px !important; } }  /* evita el zoom automático en iPhone */
+    @keyframes popIn { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 h-screen flex overflow-hidden">
+
+  <div id="overlayMenu" onclick="toggleMenu()" class="hidden md:hidden fixed inset-0 bg-black/50 z-30"></div>
+  <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-64 -translate-x-full md:translate-x-0 transition-transform duration-300 ease-out bg-verdeOscuro text-white flex flex-col justify-between border-r border-dorado/20 z-40 flex-shrink-0 overflow-y-auto">
+    <div>
+      <div class="p-6 text-center border-b border-white/10">
+        <img src="/img/pachipa-logo.png" alt="Pachipá" class="h-16 mx-auto object-contain" onerror="this.style.display='none'">
+        <h1 class="font-playfair text-xl font-bold text-dorado uppercase tracking-wider mt-2">Pachipá</h1>
+        <p class="text-[10px] text-doradoClaro/70 tracking-widest uppercase">Chipá Artesanal</p>
+      </div>
+      <nav class="p-4 space-y-1">
+        <button onclick="cambiarSeccion('inicio')" id="btn-inicio" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition bg-dorado text-verdeOscuro shadow-md"><i class="fa-solid fa-house"></i> Inicio</button>
+        <button onclick="cambiarSeccion('pedidos')" id="btn-pedidos" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-crema/80 hover:bg-white/10 transition"><i class="fa-solid fa-clipboard-list"></i> Pedidos</button>
+        <button onclick="cambiarSeccion('productos')" id="btn-productos" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-crema/80 hover:bg-white/10 transition"><i class="fa-solid fa-box"></i> Productos y Stock</button>
+        <button onclick="cambiarSeccion('boxes')" id="btn-boxes" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-crema/80 hover:bg-white/10 transition"><i class="fa-solid fa-box-open"></i>Cajas Especiales</button>
+        <button onclick="cambiarSeccion('cupones')" id="btn-cupones" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-crema/80 hover:bg-white/10 transition"><i class="fa-solid fa-ticket"></i> Cupones y Descuentos</button>
+        <button onclick="cambiarSeccion('usuarios')" id="btn-usuarios" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-crema/80 hover:bg-white/10 transition"><i class="fa-solid fa-users"></i> Usuarios</button>
+      </nav>
+    </div>
+    <div class="p-4 border-t border-white/10 text-center">
+      <p class="text-[11px] text-doradoClaro/60 italic font-playfair">"El verdadero sabor del hogar"</p>
+    </div>
+  </aside>
+
+  <div class="flex-1 flex flex-col h-screen overflow-hidden">
+    <header class="bg-verdeOscuro text-white px-4 md:px-8 py-3 md:py-4 border-b border-dorado/20 flex justify-between items-center gap-3 shadow-md">
+      <div class="flex items-center gap-3 min-w-0">
+        <button onclick="toggleMenu()" aria-label="Menú" class="md:hidden w-10 h-10 flex-shrink-0 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center"><i class="fa-solid fa-bars"></i></button>
+        <div class="min-w-0">
+          <h2 class="font-playfair text-base md:text-xl font-bold text-dorado truncate">Panel de administración</h2>
+          <p class="text-[11px] md:text-xs text-crema/70 truncate" id="fechaActual"></p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 md:gap-4 flex-shrink-0">
+        <a href="/index.html" target="_blank" title="Ver catálogo" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs px-3 md:px-4 py-2 rounded-xl transition border border-white/10 font-semibold"><i class="fa-solid fa-store"></i><span class="hidden sm:inline">Ver catálogo</span></a>
+        <div class="flex items-center gap-2 md:border-l border-white/10 md:pl-4">
+          <div class="w-8 h-8 rounded-full bg-dorado text-verdeOscuro font-bold flex items-center justify-center text-xs">PA</div>
+          <span class="hidden sm:inline text-xs font-semibold text-crema" id="usuarioEmail">Cargando...</span>
+        </div>
+        <button onclick="cerrarSesion()" title="Cerrar Sesión" class="bg-red-600 hover:bg-red-700 text-white text-xs px-3.5 py-2 rounded-xl transition font-bold shadow-md"><i class="fa-solid fa-right-from-bracket"></i></button>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 bg-gray-50/50">
+
+      <!-- INICIO -->
+      <div id="sec-inicio" class="space-y-6">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-bold font-playfair text-verdeOscuro">¡Buen día!</h2>
+          <p class="text-xs text-gray-500 mt-1">Resumen general de tu negocio en tiempo real</p>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          <div class="bg-white p-4 md:p-5 rounded-2xl border border-gray-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <div class="w-12 h-12 bg-green-100 text-green-700 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+            <div><p class="text-xs text-gray-500 font-medium">Ventas totales</p><h3 class="text-xl md:text-2xl font-bold break-words" id="kpiVentas">$0</h3></div>
+          </div>
+          <div class="bg-white p-4 md:p-5 rounded-2xl border border-gray-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-clipboard-check"></i></div>
+            <div><p class="text-xs text-gray-500 font-medium">Pedidos pendientes</p><h3 class="text-xl md:text-2xl font-bold break-words" id="kpiPedidos">0</h3></div>
+          </div>
+          <div class="bg-white p-4 md:p-5 rounded-2xl border border-gray-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <div class="w-12 h-12 bg-blue-100 text-blue-700 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-box-open"></i></div>
+            <div><p class="text-xs text-gray-500 font-medium">Productos activos</p><h3 class="text-xl md:text-2xl font-bold break-words" id="kpiProductos">0</h3></div>
+          </div>
+          <div class="bg-white p-4 md:p-5 rounded-2xl border border-gray-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div><p class="text-xs text-gray-500 font-medium">Stock bajo (&lt; 15)</p><h3 class="text-xl md:text-2xl font-bold break-words" id="kpiStockBajo">0</h3></div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-white p-4 md:p-6 rounded-2xl border border-gray-200/80 shadow-sm">
+            <h3 class="font-bold text-verdeOscuro text-base flex items-center gap-2 mb-4"><i class="fa-solid fa-chart-line text-dorado"></i> Ventas últimos 7 días</h3>
+            <div class="h-56 md:h-64 relative"><canvas id="chartVentas"></canvas></div>
+          </div>
+          <div class="bg-white p-4 md:p-6 rounded-2xl border border-gray-200/80 shadow-sm">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="font-bold text-verdeOscuro text-base">Últimos Pedidos</h3>
+              <button onclick="cambiarSeccion('pedidos')" class="text-xs text-dorado font-bold hover:underline">Ver todos →</button>
+            </div>
+            <div id="listaPedidosInicio" class="space-y-3"><p class="text-xs text-gray-400">Cargando pedidos...</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PEDIDOS -->
+      <div id="sec-pedidos" class="hidden space-y-6">
+        <h2 class="text-2xl font-bold text-verdeOscuro font-playfair">Gestión de Pedidos</h2>
+        <div id="tabsPedidos" class="flex flex-wrap gap-2"></div>
+        <div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-200">
+          <div id="cardsPedidos" class="md:hidden space-y-3"></div>
+          <div class="overflow-x-auto hidden md:block">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-gray-50 text-gray-500 uppercase font-bold border-b">
+                <tr><th class="p-3"># ID</th><th class="p-3">Cliente</th><th class="p-3">Qué pidieron</th><th class="p-3">Total</th><th class="p-3">Estado</th><th class="p-3">Acción</th></tr>
+              </thead>
+              <tbody id="tablaPedidos" class="divide-y"><tr><td colspan="6" class="p-4 text-gray-400 text-center">Cargando pedidos...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCTOS -->
+      <div id="sec-productos" class="hidden space-y-6">
+        <div class="flex flex-wrap justify-between items-center gap-3">
+          <h2 class="text-2xl font-bold text-verdeOscuro font-playfair">Productos y Stock</h2>
+          <button onclick="abrirModalProducto()" class="bg-verdeOscuro hover:bg-verdeClaro text-dorado font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md"><i class="fa-solid fa-plus"></i> Nuevo Producto</button>
+        </div>
+        <div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-200">
+          <div id="gridProductos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"><p class="text-xs text-gray-400">Cargando productos...</p></div>
+        </div>
+      </div>
+
+      <!-- BOXES -->
+      <div id="sec-boxes" class="hidden space-y-6">
+        <div class="flex flex-wrap justify-between items-center gap-3">
+          <div>
+            <h2 class="text-2xl font-bold text-verdeOscuro font-playfair">Boxes y Cajas Especiales</h2>
+            <p class="text-xs text-gray-500">Combos especiales para eventos (Día del Padre, San Valentín, etc.)</p>
+          </div>
+          <button onclick="abrirModalBox()" class="bg-verdeOscuro hover:bg-verdeClaro text-dorado font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-md"><i class="fa-solid fa-box-open"></i> Crear Nuevo Box</button>
+        </div>
+        <div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-200">
+          <div id="gridBoxes" class="grid grid-cols-1 md:grid-cols-2 gap-6"><p class="text-xs text-gray-400">Cargando boxes...</p></div>
+        </div>
+      </div>
+
+      <!-- CUPONES -->
+      <div id="sec-cupones" class="hidden space-y-6">
+        <h2 class="text-2xl font-bold text-verdeOscuro font-playfair">Cupones de Descuento</h2>
+        <div class="bg-white p-4 md:p-6 rounded-2xl border border-gray-200 shadow-sm max-w-lg">
+          <form onsubmit="crearCupon(event)" class="space-y-4">
+            <div>
+              <label class="text-xs font-bold text-gray-700 uppercase block mb-1">Código del Cupón</label>
+              <input type="text" id="cuponCodigo" placeholder="EJ: PACHIPA10" required class="w-full p-2.5 border rounded-xl text-sm">
+            </div>
+            <div>
+              <label class="text-xs font-bold text-gray-700 uppercase block mb-1">Porcentaje de Descuento (%)</label>
+              <input type="number" id="cuponPorcentaje" placeholder="Ej: 10" required min="1" max="100" class="w-full p-2.5 border rounded-xl text-sm">
+            </div>
+            <button type="submit" class="bg-verdeOscuro hover:bg-verdeClaro text-dorado font-bold text-xs px-5 py-3 rounded-xl transition w-full shadow-md">Guardar Cupón</button>
+          </form>
+        </div>
+        <div class="bg-white p-4 md:p-6 rounded-2xl border border-gray-200 shadow-sm">
+          <h3 class="font-bold text-verdeOscuro mb-3 text-sm">Cupones</h3>
+          <div id="listaCupones" class="space-y-2"><p class="text-xs text-gray-400">Cargando cupones...</p></div>
+        </div>
+      </div>
+
+      <!-- USUARIOS -->
+      <div id="sec-usuarios" class="hidden space-y-6">
+        <h2 class="text-2xl font-bold text-verdeOscuro font-playfair">Usuarios y Empleados</h2>
+        <div class="bg-white p-4 md:p-6 rounded-2xl border border-gray-200 shadow-sm max-w-lg">
+          <h3 class="font-bold text-verdeOscuro mb-3 text-sm">Crear usuario</h3>
+          <form onsubmit="crearUsuario(event)" class="space-y-3">
+            <input type="text" id="usrNombre" placeholder="Nombre" required class="w-full p-2.5 border rounded-xl text-sm">
+            <input type="email" id="usrEmail" placeholder="Email" required class="w-full p-2.5 border rounded-xl text-sm">
+            <input type="password" id="usrPass" placeholder="Contraseña (mínimo 6 caracteres)" required minlength="6" class="w-full p-2.5 border rounded-xl text-sm">
+            <select id="usrRol" class="w-full p-2.5 border rounded-xl text-sm bg-white"><option value="empleado">Empleado</option><option value="admin">Admin</option></select>
+            <button type="submit" class="bg-verdeOscuro hover:bg-verdeClaro text-dorado font-bold text-xs px-5 py-3 rounded-xl transition w-full shadow-md">Crear usuario</button>
+          </form>
+        </div>
+        <div class="bg-white p-4 md:p-6 rounded-2xl border border-gray-200 shadow-sm">
+          <h3 class="font-bold text-verdeOscuro mb-3 text-sm">Equipo con acceso al panel</h3>
+          <div id="listaUsuarios" class="space-y-2"><p class="text-xs text-gray-400">Cargando...</p></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL PRODUCTO -->
+  <div id="modalProducto" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl space-y-4">
+      <h3 class="font-bold text-lg text-verdeOscuro font-playfair border-b pb-2">Gestión de Producto</h3>
+      <form onsubmit="guardarProducto(event)" class="space-y-3">
+        <input type="hidden" id="prodEsEdicion" value="false">
+        <div>
+          <label class="text-xs font-bold text-gray-600 block mb-1">ID (opcional, se genera solo)</label>
+          <input type="text" id="prodId" placeholder="ej: chipa-salame" class="w-full p-2.5 border rounded-xl text-sm">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-gray-600 block mb-1">Nombre</label>
+          <input type="text" id="prodNombre" required placeholder="ej: Chipá de Salame" class="w-full p-2.5 border rounded-xl text-sm">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-gray-600 block mb-1">Descripción</label>
+          <input type="text" id="prodDescripcion" placeholder="Sabor tradicional del litoral..." class="w-full p-2.5 border rounded-xl text-sm">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-gray-600 block mb-1">Opciones y precios (ej: 1/4 KG → $7000)</label>
+          <div id="prodOpciones" class="space-y-2"></div>
+          <button type="button" onclick="filaOpcion()" class="mt-2 text-xs font-bold text-verdeClaro hover:underline"><i class="fa-solid fa-plus"></i> Agregar opción</button>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-bold text-gray-600 block mb-1">Stock Actual</label>
+            <input type="number" id="prodStock" required placeholder="50" class="w-full p-2.5 border rounded-xl text-sm">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-gray-600 block mb-1">Categoría</label>
+            <select id="prodCategoria" onchange="cargarPreset()" class="w-full p-2.5 border rounded-xl text-sm bg-white">
+              <option value="Por Kilo">Por Kilo</option>
+              <option value="Por Docena">Por Docena</option>
+              <option value="Minorista">Minorista</option>
+              <option value="Mayorista">Mayorista</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-gray-600 block mb-1">Imagen</label>
+          <div class="flex items-center gap-3">
+            <img id="prodImgPreview" class="w-16 h-16 rounded-xl object-cover bg-gray-100 border hidden">
+            <input type="file" id="prodImagenFile" accept="image/*" onchange="previsualizar(this,'prodImgPreview')" class="text-xs flex-1">
+          </div>
+          <input type="hidden" id="prodImagen">
+        </div>
+        <div class="flex justify-end gap-2 pt-3">
+          <button type="button" onclick="cerrarModalProducto()" class="px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-xl">Cancelar</button>
+          <button type="submit" class="px-5 py-2 text-xs font-bold bg-verdeOscuro text-dorado rounded-xl hover:bg-verdeClaro">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL BOX -->
+  <div id="modalBox" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl space-y-4">
+      <h3 class="font-bold text-lg text-verdeOscuro font-playfair border-b pb-2">Crear Box Especial</h3>
+      <form onsubmit="guardarBox(event)" class="space-y-3">
+        <div>
+          <label class="text-xs font-bold text-gray-600 block mb-1">Nombre de la Caja / Combo</label>
+          <input type="text" id="boxNombre" required placeholder="Box San Valentín" class="w-full p-2.5 border rounded-xl text-sm">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-gray-600 block mb-1">Evento / Ocasión</label>
+          <input type="text" id="boxEvento" required placeholder="San Valentín, Día del Padre..." class="w-full p-2.5 border rounded-xl text-sm">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-gray-600 block mb-1">Contenido / Descripción</label>
+          <textarea id="boxContenido" required placeholder="12 chipás rellenos + 1 dip de cheddar" class="w-full p-2.5 border rounded-xl text-sm h-16"></textarea>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-gray-600 block mb-1">Imagen (opcional)</label>
+          <div class="flex items-center gap-3">
+            <img id="boxImgPreview" class="w-16 h-16 rounded-xl object-cover bg-gray-100 border hidden">
+            <input type="file" id="boxImagenFile" accept="image/*" onchange="previsualizar(this,'boxImgPreview')" class="text-xs flex-1">
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="text-xs font-bold text-gray-600 block mb-1">Precio Reg.</label>
+            <input type="number" id="boxPrecioReg" required placeholder="40000" class="w-full p-2 border rounded-xl text-xs">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-gray-600 block mb-1">Precio Oferta</label>
+            <input type="number" id="boxPrecioOferta" required placeholder="35000" class="w-full p-2 border rounded-xl text-xs">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-gray-600 block mb-1">Cupos c/ oferta</label>
+            <input type="number" id="boxCupos" required placeholder="20" class="w-full p-2 border rounded-xl text-xs">
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-3">
+          <button type="button" onclick="cerrarModalBox()" class="px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-xl">Cancelar</button>
+          <button type="submit" class="px-5 py-2 text-xs font-bold bg-verdeOscuro text-dorado rounded-xl hover:bg-verdeClaro">Guardar Box</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- AVISOS (toasts) -->
+  <div id="toasts" class="fixed top-4 inset-x-3 sm:inset-x-auto sm:right-5 sm:top-5 z-[120] flex flex-col items-center sm:items-end gap-2 pointer-events-none"></div>
+
+  <!-- MODAL DE CONFIRMACIÓN -->
+  <div id="modalConfirm" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-[110]">
+    <div class="pop-in bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center space-y-3">
+      <div id="confirmIcono" class="w-14 h-14 mx-auto rounded-full bg-red-100 text-red-600 flex items-center justify-center text-2xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h3 id="confirmTitulo" class="font-playfair text-lg font-bold text-verdeOscuro"></h3>
+      <p id="confirmMsg" class="text-sm text-gray-500"></p>
+      <div class="flex gap-2 pt-2">
+        <button id="confirmNo" class="flex-1 py-2.5 rounded-xl text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition">Cancelar</button>
+        <button id="confirmSi" class="flex-1 py-2.5 rounded-xl text-sm font-bold transition">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const SUPABASE_URL = "https://fyemmozlzywnfcsyamqn.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Ik5Atc6ct15a3RsmxblRDg_OrqDhqjC";
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $ = id => document.getElementById(id);
+const fmt = n => "$" + Number(n || 0).toLocaleString("es-AR");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ok = async (q, msg = "Cambios guardados") => { const { error } = await q; if (error) { toast(error.message, "error"); return false; } if (msg) toast(msg, "ok"); return true; };
+const BTN_OFF = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-crema/80 hover:bg-white/10 transition";
+const BTN_ON = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition bg-dorado text-verdeOscuro shadow-md";
+let chart = null, productosCache = [];
+
+$("fechaActual").innerText = new Date().toLocaleDateString("es-AR", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+
+// ========== AVISOS Y CONFIRMACIONES ==========
+function toast(msg, tipo = "ok", ms) {
+  const t = { ok: ["fa-circle-check", "border-green-500", "text-green-600"], error: ["fa-circle-xmark", "border-red-500", "text-red-600"], info: ["fa-circle-info", "border-blue-500", "text-blue-600"] }[tipo] || ["fa-circle-info", "border-blue-500", "text-blue-600"];
+  const el = document.createElement("div");
+  el.className = `toast-in pointer-events-auto flex items-start gap-3 bg-white border-l-4 ${t[1]} rounded-xl shadow-xl px-4 py-3 w-80 max-w-[90vw] cursor-pointer`;
+  el.innerHTML = `<i class="fa-solid ${t[0]} ${t[2]} text-lg mt-0.5"></i><p class="text-sm text-gray-700 font-medium flex-1 break-words"></p>`;
+  el.querySelector("p").textContent = msg;
+  const cerrarT = () => { el.style.opacity = "0"; el.style.transform = "translateX(20px)"; setTimeout(() => el.remove(), 250); };
+  el.onclick = cerrarT;
+  $("toasts").appendChild(el);
+  const dur = ms ?? (tipo === "error" ? 6000 : 3200); // ms = 0 → queda fijo hasta que lo cierres
+  if (dur) setTimeout(cerrarT, dur);
+}
+
+function confirmar(msg, { titulo = "¿Estás seguro?", boton = "Confirmar", peligro = false } = {}) {
+  return new Promise(res => {
+    const m = $("modalConfirm"), si = $("confirmSi"), no = $("confirmNo");
+    $("confirmTitulo").textContent = titulo; $("confirmMsg").textContent = msg; si.textContent = boton;
+    si.className = "flex-1 py-2.5 rounded-xl text-sm font-bold transition " + (peligro ? "bg-red-600 hover:bg-red-700 text-white" : "bg-verdeOscuro hover:bg-verdeClaro text-dorado");
+    $("confirmIcono").className = "w-14 h-14 mx-auto rounded-full flex items-center justify-center text-2xl " + (peligro ? "bg-red-100 text-red-600" : "bg-amber-100 text-amber-600");
+    const tecla = e => { if (e.key === "Escape") fin(false); };
+    const fin = v => { m.classList.add("hidden"); m.classList.remove("flex"); document.removeEventListener("keydown", tecla); si.onclick = no.onclick = m.onclick = null; res(v); };
+    document.addEventListener("keydown", tecla);
+    si.onclick = () => fin(true); no.onclick = () => fin(false);
+    m.onclick = e => { if (e.target === m) fin(false); };
+    m.classList.remove("hidden"); m.classList.add("flex"); no.focus();
+  });
+}
+
+// ========== SESIÓN ==========
+const LOCAL_ID = 5; // locales.id de "pachipa"
+let miRol = null, miId = null, sinPermiso = false;
+(async () => {
+  const { data: { session } } = await db.auth.getSession();
+  if (!session) { location.replace("login.html"); return; }
+  miId = session.user.id;
+  const { data: perfil, error } = await db.from("perfiles").select("*").eq("id", miId).maybeSingle();
+  if (error) { toast("Falta correr el SQL actualizado en Supabase: " + error.message, "error", 0); return; }
+  if (!perfil || (perfil.local_id && perfil.local_id !== LOCAL_ID)) { sinPermiso = true; toast("Tu usuario no tiene permiso para entrar al panel.", "error", 0); await db.auth.signOut(); setTimeout(() => location.replace("login.html"), 2500); return; }
+  miRol = perfil.rol;
+  $("usuarioEmail").innerText = perfil.nombre || session.user.email;
+  if (miRol !== "admin") $("btn-usuarios").classList.add("hidden");
+  recargarTodo();
+})();
+db.auth.onAuthStateChange(ev => { if (ev === "SIGNED_OUT" && !sinPermiso) location.replace("login.html"); });
+async function cerrarSesion() { await db.auth.signOut(); location.replace("login.html"); }
+
+async function recargarTodo() {
+  await cargarProductos(); // los pedidos viejos se clasifican con el catálogo
+  cargarResumenDashboard(); cargarBoxes(); cargarCupones(); cargarPedidos();
+  if (miRol === "admin") cargarUsuarios();
+  iniciarRealtime();
+}
+
+function toggleMenu() {
+  const a = $("sidebar"), cerrando = !a.classList.contains("-translate-x-full");
+  a.classList.toggle("-translate-x-full", cerrando);
+  $("overlayMenu").classList.toggle("hidden", cerrando);
+}
+function cerrarMenu() { $("sidebar").classList.add("-translate-x-full"); $("overlayMenu").classList.add("hidden"); }
+
+function cambiarSeccion(n) {
+  cerrarMenu();
+  ["inicio", "pedidos", "productos", "boxes", "cupones", "usuarios"].forEach(s => {
+    $("sec-" + s)?.classList.add("hidden");
+    if ($("btn-" + s)) $("btn-" + s).className = BTN_OFF;
+  });
+  $("sec-" + n)?.classList.remove("hidden");
+  if ($("btn-" + n)) $("btn-" + n).className = BTN_ON;
+}
+
+const abrir = id => { $(id).classList.remove("hidden"); $(id).classList.add("flex"); };
+const cerrar = id => { $(id).classList.add("hidden"); $(id).classList.remove("flex"); };
+
+// ========== DASHBOARD ==========
+async function cargarResumenDashboard() {
+  const [{ data: prods }, { data: ped }] = await Promise.all([
+    db.from("productos").select("activo,stock"),
+    db.from("pedidos").select("*").order("created_at", { ascending: false })
+  ]);
+  if (prods) {
+    $("kpiProductos").innerText = prods.filter(p => p.activo).length;
+    $("kpiStockBajo").innerText = prods.filter(p => p.activo && p.stock < 15).length;
+  }
+  if (!ped) return;
+  const validos = ped.filter(p => p.estado === "Pagado"); // ventas = pedidos pagados
+  $("kpiPedidos").innerText = ped.filter(p => p.estado === "Pendiente").length;
+  $("kpiVentas").innerText = fmt(validos.reduce((a, p) => a + Number(p.total || 0), 0));
+
+  $("listaPedidosInicio").innerHTML = ped.length ? ped.slice(0, 4).map(p => `
+    <div class="flex justify-between items-center p-2.5 bg-gray-50 rounded-xl">
+      <div><span class="font-bold text-xs text-verdeOscuro">#${p.id}</span>
+      <p class="text-xs text-gray-600 font-medium">${esc(p.cliente_nombre || "Cliente")}</p></div>
+      <div class="text-right"><span class="text-xs font-bold text-gray-800">${fmt(p.total)}</span>
+      <span class="block text-[10px] ${claseEstado(p.estado)} px-2 py-0.5 rounded-full font-bold mt-0.5">${esc(p.estado)}</span></div>
+    </div>`).join("") : `<p class="text-xs text-gray-400">Todavía no hay pedidos.</p>`;
+
+  // Gráfico: ventas de los últimos 7 días
+  const key = d => d.toLocaleDateString("en-CA");
+  const dias = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - 6 + i); return d; });
+  const tot = {};
+  validos.forEach(p => { const k = key(new Date(p.created_at)); tot[k] = (tot[k] || 0) + Number(p.total || 0); });
+  const labels = dias.map(d => d.toLocaleDateString("es-AR", { weekday: "short", day: "numeric" }));
+  const datos = dias.map(d => tot[key(d)] || 0);
+  if (chart) { chart.data.labels = labels; chart.data.datasets[0].data = datos; chart.update(); return; }
+  chart = new Chart($("chartVentas").getContext("2d"), {
+    type: "line",
+    data: { labels, datasets: [{ label: "Ventas ($)", data: datos, borderColor: "#142A13", backgroundColor: "rgba(20,42,19,0.1)", fill: true, tension: 0.3 }] },
+    options: { responsive: true, maintainAspectRatio: false }
+  });
+}
+
+const claseEstado = e => e === "Pagado" ? "bg-green-100 text-green-700" : e === "Cancelado" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700";
+
+// ========== PEDIDOS ==========
+const ESTADOS = ["Pendiente", "Pagado", "Cancelado"];
+const TABS = [["Minorista", "Minorista"], ["Mayorista", "Mayorista"], ["Kilo", "Por Kilo y Docena"]];
+let tabPedidos = "Minorista", pedidosCache = [];
+
+function tipoPedido(p) {
+  const cats = (p.items || []).map(i => i.categoria || productosCache.find(x => (i.nombre || "").startsWith(x.nombre))?.categoria || "");
+  if (cats.includes("Mayorista")) return "Mayorista";
+  if (cats.includes("Minorista")) return "Minorista";
+  return "Kilo"; // Por Kilo, Por Docena y Boxes
+}
+function cambiarTab(t) { tabPedidos = t; renderPedidos(); }
+
+async function cargarPedidos() {
+  const { data, error } = await db.from("pedidos").select("*").order("created_at", { ascending: false });
+  if (error) { $("tablaPedidos").innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-500">${esc(error.message)}</td></tr>`; return; }
+  pedidosCache = data; renderPedidos();
+}
+
+function renderPedidos() {
+  $("tabsPedidos").innerHTML = TABS.map(([k, nombre]) => {
+    const lista = pedidosCache.filter(p => tipoPedido(p) === k), pend = lista.filter(p => p.estado === "Pendiente").length;
+    return `<button onclick="cambiarTab('${k}')" class="px-4 py-2 rounded-xl text-xs font-bold transition ${k === tabPedidos ? "bg-verdeOscuro text-dorado shadow-md" : "bg-white border text-gray-600 hover:bg-gray-100"}">${nombre}${pend ? ` <span class="ml-1 bg-amber-400 text-black rounded-full px-1.5">${pend}</span>` : ""}</button>`;
+  }).join("");
+  const peds = pedidosCache.filter(p => tipoPedido(p) === tabPedidos);
+  if (!peds.length) { $("cardsPedidos").innerHTML = `<p class="text-center text-gray-400 text-xs py-6">Sin pedidos en esta sección.</p>`; $("tablaPedidos").innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400">Sin pedidos en esta sección.</td></tr>`; return; }
+  $("tablaPedidos").innerHTML = peds.map(p => {
+    const entrega = p.tipo === "Delivery" ? `🛵 ${esc(p.direccion)} <span class="text-gray-400">(${esc(p.zona)})</span>` : p.tipo === "Retiro" ? "🏠 Retiro en local" : esc(p.tipo || "");
+    const items = (p.items || []).map(i => `<li>• ${esc(i.nombre)} <b class="text-gray-700">${fmt(i.precio)}</b></li>`).join("");
+    const estados = ESTADOS.includes(p.estado) ? ESTADOS : [...ESTADOS, p.estado];
+    return `<tr class="hover:bg-gray-50 align-top">
+      <td class="p-3 font-bold text-verdeOscuro">#${p.id}<p class="text-[10px] text-gray-400 font-normal">${new Date(p.created_at).toLocaleString("es-AR")}</p></td>
+      <td class="p-3 font-medium">${esc(p.cliente_nombre || "Cliente")}${p.cliente_telefono ? `<p class="text-[10px] text-gray-500 font-normal">📞 ${esc(p.cliente_telefono)}</p>` : ""}<p class="text-[10px] text-gray-500 font-normal">${entrega}</p></td>
+      <td class="p-3"><ul class="space-y-0.5 text-gray-600">${items}</ul></td>
+      <td class="p-3 font-bold">${fmt(p.total)}<p class="text-[10px] text-gray-400 font-normal">${esc(p.pago || "")}</p></td>
+      <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${claseEstado(p.estado)}">${esc(p.estado)}</span></td>
+      <td class="p-3"><select onchange="cambiarEstadoPedido(${p.id}, this.value)" class="border rounded-lg p-1 text-xs">${estados.map(e => `<option ${e === p.estado ? "selected" : ""}>${esc(e)}</option>`).join("")}</select></td></tr>`;
+  }).join("");
+
+  $("cardsPedidos").innerHTML = peds.map(p => {
+    const entrega = p.tipo === "Delivery" ? `🛵 ${esc(p.direccion)} <span class="text-gray-400">(${esc(p.zona)})</span>` : p.tipo === "Retiro" ? "🏠 Retiro en local" : esc(p.tipo || "");
+    const items = (p.items || []).map(i => `<li class="flex justify-between gap-3"><span>• ${esc(i.nombre)}</span><b class="text-gray-700 whitespace-nowrap">${fmt(i.precio)}</b></li>`).join("");
+    const estados = ESTADOS.includes(p.estado) ? ESTADOS : [...ESTADOS, p.estado];
+    return `<div class="border rounded-2xl p-4 bg-gray-50 space-y-2">
+      <div class="flex justify-between items-start gap-2">
+        <div><span class="font-bold text-verdeOscuro">#${p.id}</span><p class="text-[11px] text-gray-400">${new Date(p.created_at).toLocaleString("es-AR")}</p></div>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${claseEstado(p.estado)}">${esc(p.estado)}</span>
+      </div>
+      <p class="font-bold text-sm text-gray-800">${esc(p.cliente_nombre || "Cliente")}</p>
+      ${p.cliente_telefono ? `<p class="text-xs text-gray-500">📞 ${esc(p.cliente_telefono)}</p>` : ""}
+      <p class="text-xs text-gray-500">${entrega}</p>
+      <ul class="text-xs text-gray-600 space-y-1 border-t pt-2">${items}</ul>
+      <div class="flex justify-between items-center gap-3 border-t pt-2">
+        <div><p class="font-extrabold text-base text-gray-800">${fmt(p.total)}</p><p class="text-[11px] text-gray-400">${esc(p.pago || "")}</p></div>
+        <select onchange="cambiarEstadoPedido(${p.id}, this.value)" class="border rounded-lg p-2 text-sm bg-white">${estados.map(e => `<option ${e === p.estado ? "selected" : ""}>${esc(e)}</option>`).join("")}</select>
+      </div></div>`;
+  }).join("");
+}
+async function cambiarEstadoPedido(id, estado) {
+  if (await ok(db.from("pedidos").update({ estado }).eq("id", id), "Estado actualizado")) { cargarPedidos(); cargarResumenDashboard(); }
+}
+
+// ========== PRODUCTOS ==========
+async function cargarProductos() {
+  const { data, error } = await db.from("productos").select("*").order("nombre");
+  if (error) { $("gridProductos").innerHTML = `<p class="text-xs text-red-500">${esc(error.message)}</p>`; return; }
+  productosCache = data;
+  if (!data.length) { $("gridProductos").innerHTML = `<p class="text-xs text-gray-500 col-span-3">No hay productos cargados todavía.</p>`; return; }
+  $("gridProductos").innerHTML = data.map(p => `
+    <div class="p-4 border rounded-2xl bg-gray-50 flex flex-col justify-between ${p.activo ? "" : "opacity-50"}">
+      <div>
+        <div class="flex justify-between items-start mb-2 gap-2">
+          <span class="font-bold text-sm text-verdeOscuro">${esc(p.nombre)}</span>
+          <span class="text-[10px] px-2 py-0.5 rounded font-bold whitespace-nowrap ${p.stock < 15 ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}">Stock: ${p.stock}</span>
+        </div>
+        <p class="text-xs text-gray-500 mb-2">${esc(p.categoria)}${p.activo ? "" : " · OCULTO"}</p>
+        ${(p.variantes || []).map(v => `<p class="text-xs text-gray-600">${esc(v.label)} — <b>${fmt(v.precio)}</b></p>`).join("")}
+      </div>
+      <div class="mt-4 pt-2 border-t flex justify-between items-center text-xs">
+        <button onclick="abrirModalProducto('${esc(p.id)}')" class="text-blue-600 font-bold hover:underline">Editar</button>
+        <button onclick="toggleProducto('${esc(p.id)}', ${!p.activo})" class="text-gray-600 font-bold hover:underline">${p.activo ? "Ocultar" : "Mostrar"}</button>
+        <button onclick="eliminarProducto('${esc(p.id)}')" class="text-red-500 font-bold hover:underline">Eliminar</button>
+      </div>
+    </div>`).join("");
+}
+
+const PRESETS = { "Por Kilo": ["1/4 KG", "1/2 KG", "1 KG"], "Por Docena": ["1 Unidad", "6 Unidades", "12 Unidades"], "Minorista": ["Bolsa 1/4kg", "Bolsa 1/2kg", "Bolsa 1kg"], "Mayorista": ["3 KG Congelado", "6 KG Congelado"] };
+
+function filaOpcion(label = "", precio = "") {
+  const d = document.createElement("div");
+  d.className = "flex gap-2 items-center";
+  d.innerHTML = `<input type="text" placeholder="Ej: 1/2 KG" value="${esc(label)}" class="op-label flex-1 p-2.5 border rounded-xl text-sm">
+    <input type="number" min="0" placeholder="Precio $" value="${esc(precio)}" class="op-precio w-28 p-2.5 border rounded-xl text-sm">
+    <button type="button" onclick="this.parentElement.remove()" class="text-red-500 px-2 font-bold" title="Quitar">✕</button>`;
+  $("prodOpciones").appendChild(d);
+}
+function cargarPreset() { // sugiere las opciones de la categoría solo si todavía no cargaste precios
+  const filas = [...$("prodOpciones").children];
+  if (filas.every(r => !r.querySelector(".op-precio").value)) {
+    $("prodOpciones").innerHTML = "";
+    PRESETS[$("prodCategoria").value].forEach(l => filaOpcion(l));
+  }
+}
+function previsualizar(inp, imgId) {
+  const f = inp.files[0], im = $(imgId);
+  if (!f) return;
+  im.src = URL.createObjectURL(f); im.classList.remove("hidden");
+}
+async function subirImagen(inputId, carpeta) {
+  const f = $(inputId).files[0];
+  if (!f) return null;
+  const ext = (f.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+  const path = `${carpeta}/${Date.now()}.${ext}`;
+  const { error } = await db.storage.from("imagenes").upload(path, f, { cacheControl: "31536000" });
+  if (error) { toast("No se pudo subir la imagen: " + error.message, "error"); return false; }
+  return db.storage.from("imagenes").getPublicUrl(path).data.publicUrl;
+}
+
+function abrirModalProducto(id) {
+  const p = id ? productosCache.find(x => x.id === id) : null;
+  $("prodEsEdicion").value = p ? "true" : "false";
+  $("prodId").value = p?.id || ""; $("prodId").readOnly = !!p;
+  $("prodNombre").value = p?.nombre || "";
+  $("prodDescripcion").value = p?.descripcion || "";
+  $("prodStock").value = p?.stock ?? "";
+  $("prodCategoria").value = p?.categoria || "Por Kilo";
+  $("prodImagen").value = p?.imagen || "";
+  $("prodImagenFile").value = "";
+  $("prodImgPreview").src = p?.imagen || "";
+  $("prodImgPreview").classList.toggle("hidden", !p?.imagen);
+  $("prodOpciones").innerHTML = "";
+  if (p && (p.variantes || []).length) p.variantes.forEach(v => filaOpcion(v.label, v.precio)); else cargarPreset();
+  abrir("modalProducto");
+}
+const cerrarModalProducto = () => cerrar("modalProducto");
+
+async function guardarProducto(e) {
+  e.preventDefault();
+  const btn = e.submitter; btn.disabled = true; const txt = btn.innerText; btn.innerText = "Guardando...";
+  try {
+    const variantes = [...$("prodOpciones").children].map((r, i) => ({
+      id: "v" + (i + 1), label: r.querySelector(".op-label").value.trim(), precio: Number(r.querySelector(".op-precio").value)
+    })).filter(v => v.label || v.precio);
+    if (!variantes.length || variantes.some(v => !v.label || !(v.precio >= 0))) { toast("Cargá al menos una opción con nombre y precio.", "error"); return; }
+    const url = await subirImagen("prodImagenFile", "productos");
+    if (url === false) return;
+    const nombre = $("prodNombre").value.trim();
+    const id = ($("prodId").value.trim() || nombre).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const prod = {
+      id, nombre, descripcion: $("prodDescripcion").value.trim(), stock: Number($("prodStock").value),
+      categoria: $("prodCategoria").value, imagen: url || $("prodImagen").value || "img/chipa.jpg", variantes
+    };
+    if (await ok(db.from("productos").upsert([prod]), "Producto guardado")) { cerrarModalProducto(); cargarProductos(); cargarResumenDashboard(); }
+  } finally { btn.disabled = false; btn.innerText = txt; }
+}
+async function toggleProducto(id, activo) { if (await ok(db.from("productos").update({ activo }).eq("id", id))) { cargarProductos(); cargarResumenDashboard(); } }
+async function eliminarProducto(id) {
+  if (!(await confirmar("Se va a borrar del catálogo. Esta acción no se puede deshacer.", { titulo: "¿Eliminar producto?", boton: "Sí, eliminar", peligro: true }))) return;
+  if (await ok(db.from("productos").delete().eq("id", id), "Producto eliminado")) { cargarProductos(); cargarResumenDashboard(); }
+}
+
+// ========== BOXES ==========
+async function cargarBoxes() {
+  const { data, error } = await db.from("boxes").select("*").order("id", { ascending: false });
+  if (error) { $("gridBoxes").innerHTML = `<p class="text-xs text-red-500">${esc(error.message)}</p>`; return; }
+  if (!data.length) { $("gridBoxes").innerHTML = `<p class="text-xs text-gray-500 col-span-2">No hay boxes armadas todavía.</p>`; return; }
+  $("gridBoxes").innerHTML = data.map(b => `
+    <div class="p-5 border border-dorado/30 rounded-2xl bg-verdeOscuro text-white flex flex-col justify-between ${b.activo ? "" : "opacity-50"}">
+      <div>
+        <span class="bg-dorado text-verdeOscuro font-extrabold text-[10px] px-2.5 py-1 rounded-full uppercase">${esc(b.evento)}</span>
+        <h3 class="font-playfair text-xl font-bold text-dorado mt-2">${esc(b.nombre)}</h3>
+        <p class="text-xs text-crema/80 mt-1">${esc(b.contenido)}</p>
+      </div>
+      <div class="mt-4 pt-3 border-t border-white/10 flex justify-between items-center">
+        <div><span class="text-xs line-through text-gray-400">${fmt(b.precio_regular)}</span><span class="text-lg font-bold text-dorado ml-2">${fmt(b.precio_oferta)}</span></div>
+        <span class="text-xs text-crema font-bold">Cupos: ${b.vendidos}/${b.cupos_totales}</span>
+      </div>
+      <div class="mt-3 flex justify-between text-xs font-bold">
+        <button onclick="toggleBox(${b.id}, ${!b.activo})" class="text-doradoClaro hover:underline">${b.activo ? "Pausar" : "Activar"}</button>
+        <button onclick="reiniciarCupos(${b.id})" class="text-doradoClaro hover:underline">Reiniciar cupos</button>
+        <button onclick="eliminarBox(${b.id})" class="text-red-400 hover:underline">Eliminar</button>
+      </div>
+    </div>`).join("");
+}
+const abrirModalBox = () => abrir("modalBox");
+const cerrarModalBox = () => cerrar("modalBox");
+
+async function guardarBox(e) {
+  e.preventDefault();
+  const btn = e.submitter; btn.disabled = true; const txt = btn.innerText; btn.innerText = "Guardando...";
+  try {
+    const url = await subirImagen("boxImagenFile", "boxes");
+    if (url === false) return;
+    const nuevo = {
+      nombre: $("boxNombre").value.trim(), evento: $("boxEvento").value.trim(), contenido: $("boxContenido").value.trim(),
+      imagen: url || null,
+      precio_regular: Number($("boxPrecioReg").value), precio_oferta: Number($("boxPrecioOferta").value),
+      cupos_totales: Number($("boxCupos").value), vendidos: 0, activo: true
+    };
+    if (await ok(db.from("boxes").insert([nuevo]), "Box creado")) { e.target.reset(); $("boxImgPreview").classList.add("hidden"); cerrarModalBox(); cargarBoxes(); }
+  } finally { btn.disabled = false; btn.innerText = txt; }
+}
+async function toggleBox(id, activo) { if (await ok(db.from("boxes").update({ activo }).eq("id", id))) cargarBoxes(); }
+async function reiniciarCupos(id) { if (await confirmar("Los cupos vendidos de este box vuelven a 0.", { titulo: "¿Reiniciar cupos?", boton: "Reiniciar" }) && await ok(db.from("boxes").update({ vendidos: 0 }).eq("id", id))) cargarBoxes(); }
+async function eliminarBox(id) { if (await confirmar("Se va a borrar el box. Esta acción no se puede deshacer.", { titulo: "¿Eliminar box?", boton: "Sí, eliminar", peligro: true }) && await ok(db.from("boxes").delete().eq("id", id))) cargarBoxes(); }
+
+// ========== CUPONES ==========
+async function cargarCupones() {
+  const { data, error } = await db.from("cupones").select("*").order("codigo");
+  if (error) { $("listaCupones").innerHTML = `<p class="text-xs text-red-500">${esc(error.message)}</p>`; return; }
+  $("listaCupones").innerHTML = data.length ? data.map(c => `
+    <div class="flex flex-wrap justify-between items-center gap-2 p-3 bg-gray-50 rounded-xl border ${c.activo ? "" : "opacity-50"}">
+      <span class="font-bold text-verdeOscuro text-xs">${esc(c.codigo)} (${c.descuento_porcentaje}% OFF)</span>
+      <span class="flex gap-4 text-xs font-bold">
+        <button onclick="toggleCupon('${esc(c.codigo)}', ${!c.activo})" class="text-gray-600">${c.activo ? "Desactivar" : "Activar"}</button>
+        <button onclick="eliminarCupon('${esc(c.codigo)}')" class="text-red-500">Eliminar</button>
+      </span>
+    </div>`).join("") : `<p class="text-xs text-gray-400">No hay cupones creados.</p>`;
+}
+async function crearCupon(e) {
+  e.preventDefault();
+  const nuevo = { codigo: $("cuponCodigo").value.trim().toUpperCase(), descuento_porcentaje: Number($("cuponPorcentaje").value), activo: true };
+  if (await ok(db.from("cupones").insert([nuevo]), "Cupón creado")) { e.target.reset(); cargarCupones(); }
+}
+async function toggleCupon(codigo, activo) { if (await ok(db.from("cupones").update({ activo }).eq("codigo", codigo))) cargarCupones(); }
+async function eliminarCupon(codigo) { if (await confirmar("El cupón va a dejar de funcionar.", { titulo: "¿Eliminar cupón?", boton: "Sí, eliminar", peligro: true }) && await ok(db.from("cupones").delete().eq("codigo", codigo))) cargarCupones(); }
+
+
+// ========== USUARIOS ==========
+async function cargarUsuarios() {
+  const { data, error } = await db.from("perfiles").select("*").or(`local_id.eq.${LOCAL_ID},id.eq.${miId}`).order("nombre");
+  if (error) { $("listaUsuarios").innerHTML = `<p class="text-xs text-red-500">${esc(error.message)}</p>`; return; }
+  $("listaUsuarios").innerHTML = data.map(u => {
+    const yo = u.id === miId;
+    return `<div class="flex flex-wrap justify-between items-center gap-3 p-3 bg-gray-50 rounded-xl border">
+      <div class="min-w-0"><p class="font-bold text-verdeOscuro text-xs">${esc(u.nombre || "Sin nombre")}${yo ? " (vos)" : ""}</p><p class="text-[11px] text-gray-500 truncate">${u.local_id ? "Pachipá" : "Acceso total (dueño)"}</p></div>
+      <div class="flex items-center gap-3 text-xs font-bold">
+        <select onchange="cambiarRol('${u.id}', this.value)" ${yo ? "disabled" : ""} class="border rounded-lg p-1 text-xs">
+          <option value="empleado" ${u.rol === "empleado" ? "selected" : ""}>Empleado</option><option value="admin" ${u.rol === "admin" ? "selected" : ""}>Admin</option></select>
+        ${yo ? "" : `<button onclick="quitarUsuario('${u.id}')" class="text-red-500">Quitar acceso</button>`}
+      </div></div>`;
+  }).join("");
+}
+async function crearUsuario(e) {
+  e.preventDefault();
+  const btn = e.submitter; btn.disabled = true;
+  try {
+    const email = $("usrEmail").value.trim(), nombre = $("usrNombre").value.trim(), rol = $("usrRol").value;
+    // cliente temporal: así no se cierra TU sesión al crear al empleado
+    const tmp = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false, autoRefreshToken: false, storageKey: "tmp-signup" } });
+    const { data, error } = await tmp.auth.signUp({ email, password: $("usrPass").value, options: { data: { nombre } } });
+    if (error) { toast(error.message, "error"); return; }
+    if (!data.user || data.user.identities?.length === 0) { toast("Ese email ya tiene una cuenta.", "error"); return; }
+    if (await ok(db.from("perfiles").insert({ id: data.user.id, nombre, rol, local_id: LOCAL_ID }), false)) {
+      e.target.reset(); cargarUsuarios();
+      toast("Usuario creado." + (data.session ? "" : " Tiene que confirmar su email antes de poder entrar."), "ok", 6000);
+    }
+  } finally { btn.disabled = false; }
+}
+async function cambiarRol(id, rol) { if (await ok(db.from("perfiles").update({ rol }).eq("id", id).eq("local_id", LOCAL_ID))) cargarUsuarios(); }
+async function quitarUsuario(id) { if (await confirmar("Ya no va a poder entrar al panel de administración.", { titulo: "¿Quitar acceso?", boton: "Sí, quitar", peligro: true }) && await ok(db.from("perfiles").delete().eq("id", id).eq("local_id", LOCAL_ID))) cargarUsuarios(); }
+// ========== TIEMPO REAL ==========
+function beep() { // sonidito cuando entra un pedido (el navegador lo permite después del primer clic en la página)
+  try {
+    const c = new (window.AudioContext || window.webkitAudioContext)(), o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination); o.type = "sine"; o.frequency.value = 880;
+    g.gain.setValueAtTime(0.15, c.currentTime); g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.5);
+    o.start(); o.stop(c.currentTime + 0.5);
+  } catch (e) { /* sin sonido */ }
+}
+let realtimeIniciado = false;
+function iniciarRealtime() {
+  if (realtimeIniciado) return;
+  realtimeIniciado = true;
+  db.channel("panel-pachipa")
+    .on("postgres_changes", { event: "*", schema: "public", table: "pedidos" }, ev => {
+      if (ev.eventType === "INSERT") { toast(`🛎️ Nuevo pedido de ${ev.new.cliente_nombre || "un cliente"} — ${fmt(ev.new.total)}`, "info", 8000); beep(); }
+      cargarPedidos(); cargarResumenDashboard();
+    })
+    .on("postgres_changes", { event: "*", schema: "public", table: "productos" }, () => { cargarProductos(); cargarResumenDashboard(); })
+    .on("postgres_changes", { event: "*", schema: "public", table: "boxes" }, () => cargarBoxes())
+    .subscribe();
+}
+
+</script>
+</body>
+</html>
