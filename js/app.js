@@ -147,15 +147,41 @@ async function pedirBox(id) {
   renderProductos();
 }
 
-// ========== MODAL VARIANTES ==========
 function abrirModalVariantes(prodId) {
-  const prod = productos.find(p => p.id === prodId);
+  const prod = productos.find(p => String(p.id) === String(prodId));
   if (!prod) return;
-  productoActivo = prod; opcionSeleccionada = null; cantidadSeleccionada = 1;
+
+  productoActivo = prod;
+  opcionSeleccionada = null;
+  cantidadSeleccionada = 1;
+
   document.getElementById("variantesTitulo").innerText = prod.nombre;
-  document.getElementById("cantidadVarianteSeccion").classList.add("hidden");
+
+  // Ocultar selector de cantidad
+  document.getElementById("cantidadVarianteSeccion")?.classList.add("hidden");
+
   renderOpcionesModal();
   document.getElementById("modalVariantes").classList.remove("hidden");
+}
+
+function renderOpcionesModal() {
+  const cont = document.getElementById("opcionesVariantes");
+  if (!cont || !productoActivo) return;
+
+  cont.innerHTML = (productoActivo.variantes || []).map(op => `
+    <button
+      onclick="seleccionarOpcionModal('${esc(op.id)}')"
+      class="flex justify-between items-center px-4 py-3 rounded-xl w-full border text-left transition-colors bg-[#142A13] text-white border-dorado/20 hover:bg-verdeClaro/50"
+    >
+      <div>
+        <span class="font-bold text-sm block">${esc(op.label)}</span>
+        ${op.sublabel ? `<span class="block text-xs text-dorado font-normal mt-0.5">${esc(op.sublabel)}</span>` : ""}
+      </div>
+      <span class="text-dorado font-extrabold text-sm ml-2">
+        ${fmt(op.precio)}
+      </span>
+    </button>
+  `).join("");
 }
 
 function renderOpcionesModal() {
@@ -173,14 +199,26 @@ function renderOpcionesModal() {
 
 function seleccionarOpcionModal(opId) {
   if (!productoActivo) return;
-  opcionSeleccionada = productoActivo.variantes.find(o => o.id === opId) || null;
-  cantidadSeleccionada = 1;
-  renderOpcionesModal();
-  if (opcionSeleccionada) {
-    actualizarResumenModal();
-    document.getElementById("cantidadVarianteSeccion").classList.remove("hidden");
-  }
+
+  opcionSeleccionada = productoActivo.variantes.find(
+    o => String(o.id) === String(opId)
+  );
+
+  if (!opcionSeleccionada) return;
+
+  carrito.push({
+    nombre: `${productoActivo.nombre} (${opcionSeleccionada.label})`,
+    precio: Number(opcionSeleccionada.precio),
+    categoria: productoActivo.categoria
+  });
+
+  actualizarContador();
+  cerrarModalVariantes();
+
+  toast("¡Agregado al carrito! 🛒");
+  abrirCarrito();
 }
+
 function cambiarCantidadModal(d) {
   if (!opcionSeleccionada) return;
   cantidadSeleccionada = Math.max(1, cantidadSeleccionada + d);
@@ -203,9 +241,11 @@ function confirmarVariante() {
 }
 function cerrarModalVariantes() {
   document.getElementById("modalVariantes").classList.add("hidden");
-  productoActivo = null; opcionSeleccionada = null; cantidadSeleccionada = 1;
-}
 
+  productoActivo = null;
+  opcionSeleccionada = null;
+  cantidadSeleccionada = 1;
+}
 // ========== ZONAS Y PAGOS ==========
 function renderZonas() {
   const select = document.getElementById("zona");

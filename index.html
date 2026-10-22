@@ -78,6 +78,24 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
+    /* ── Solo en compu / tablet: cards y títulos centrados ──
+       El celular queda exactamente igual que antes. */
+    @media (min-width: 768px) {
+      #productos h2 {
+        text-align: center !important;
+      }
+      #productos .snap-x > :first-child {
+        margin-left: auto !important;
+      }
+      #productos .snap-x > :last-child {
+        margin-right: auto !important;
+      }
+      /* filtros de categoría centrados */
+      #categorias {
+        justify-content: center;
+      }
+    }
+
     @keyframes slideUp {
       from { transform: translateY(100%); }
       to   { transform: translateY(0); }
